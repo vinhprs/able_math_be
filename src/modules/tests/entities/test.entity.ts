@@ -93,4 +93,3 @@ export class Test {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

@@ -1,20 +1,24 @@
-import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
-import { TestType, GradeLevel, Term } from '@shared/types/enum';
+import { IsEnum, IsInt, IsNotEmpty, IsString, Min, IsOptional, ValidateNested, IsArray } from 'class-validator';
+import { Type } from 'class-transformer';
+import { TestType, Term } from '@shared/types/enum';
+import { CreateQuestionDto } from './create-question.dto';
 
 export class CreateTestDto {
   @IsString()
   @IsNotEmpty()
   title: string;
 
-  @IsOptional()
   @IsString()
-  description?: string;
+  @IsNotEmpty()
+  curriculum: string;
 
-  @IsEnum(TestType)
-  testType: TestType;
+  @IsString()
+  @IsNotEmpty()
+  grade: string;
 
-  @IsEnum(GradeLevel)
-  gradeLevel: GradeLevel;
+  @IsString()
+  @IsNotEmpty()
+  semester: string;
 
   @IsEnum(Term)
   term: Term;
@@ -23,12 +27,10 @@ export class CreateTestDto {
   @Min(1)
   level: number;
 
-  @IsString()
-  @IsNotEmpty()
-  version: string;
-
-  @IsInt()
-  @Min(1)
-  duration: number;
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CreateQuestionDto)
+  questions?: CreateQuestionDto[];
 }
 

@@ -11,6 +11,7 @@ import jwtConfig, { jwtRefreshConfig } from './config/jwt.config';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { TestsModule } from './modules/tests/tests.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 // Guards
 
@@ -36,6 +37,7 @@ import { TestsModule } from './modules/tests/tests.module';
     UsersModule,
     AuthModule,
     TestsModule,
+    DashboardModule,
   ],
   providers: [
     // Global guards are set up in main.ts, but we can also provide them here

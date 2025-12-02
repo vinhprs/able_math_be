@@ -47,4 +47,3 @@ export class SubmissionAnswer {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

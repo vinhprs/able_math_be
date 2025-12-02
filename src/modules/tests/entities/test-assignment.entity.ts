@@ -48,4 +48,3 @@ export class TestAssignment {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

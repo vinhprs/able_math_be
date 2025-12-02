@@ -6,17 +6,9 @@ export class CreateQuestionDto {
   @Min(1)
   questionNumber: number;
 
-  @IsInt()
-  @Min(1)
-  section: number;
-
-  @IsOptional()
-  @IsString()
-  unitName?: string;
-
   @IsString()
   @IsNotEmpty()
-  content: string;
+  unitName: string;
 
   @IsString()
   @IsNotEmpty()
@@ -26,8 +18,14 @@ export class CreateQuestionDto {
   @Min(1)
   score: number;
 
-  @IsOptional()
   @IsEnum(DifficultyLevel)
-  difficulty?: DifficultyLevel;
-}
+  difficulty: DifficultyLevel;
 
+  @IsOptional()
+  @IsString()
+  questionText?: string;
+
+  @IsOptional()
+  @IsString()
+  questionImage?: string;
+}
