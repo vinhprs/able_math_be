@@ -29,10 +29,9 @@ export class AuthController {
   /**
    * Register a new user (Admin only)
    */
-  @Public()
   @Post('register')
-  // @UseGuards(JwtAuthGuard, RolesGuard)
-  // @Roles(UserRole.ADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() registerDto: RegisterDto, @CurrentUser() currentUser: IJwtPayload) {
     return this.authService.register(registerDto, currentUser);

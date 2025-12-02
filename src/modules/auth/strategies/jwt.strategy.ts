@@ -21,7 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: IJwtPayload): Promise<IJwtPayload> {
     // Verify user still exists and is active
     const user = await this.usersService.findOne(payload.sub);
-    
+
     if (!user || !user.isActive) {
       throw new UnauthorizedException('User not found or inactive');
     }
@@ -33,4 +33,3 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     };
   }
 }
-
