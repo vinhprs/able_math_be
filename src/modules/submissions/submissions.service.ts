@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Logger,
   NotFoundException,
   BadRequestException,
   ForbiddenException,
@@ -21,6 +22,8 @@ import { GradingService } from '../grading/grading.service';
 
 @Injectable()
 export class SubmissionsService {
+  private readonly logger = new Logger(SubmissionsService.name);
+
   constructor(
     @InjectRepository(StudentSubmission)
     private submissionRepo: Repository<StudentSubmission>,
@@ -296,6 +299,7 @@ export class SubmissionsService {
 
   /**
    * Submit test - final submission
+   * Automatically grades Achievement tests
    */
   async submitTest(submissionId: string, studentId: string) {
     const submission = await this.submissionRepo.findOne({
@@ -332,14 +336,19 @@ export class SubmissionsService {
     submission.assignment.status = AssignmentStatus.SUBMITTED;
     await this.assignmentRepo.save(submission.assignment);
 
-    // If Achievement test, trigger auto-grading
+    // AUTO-GRADE Achievement tests
+    let gradingResult = null;
     if (submission.test.testType === TestType.ACHIEVEMENT) {
-      // Auto-grade the submission
       try {
-        await this.gradingService.autoGradeOnSubmit(submissionId);
+        this.logger.log(`Auto-grading Achievement test submission ${submissionId}`);
+        gradingResult = await this.gradingService.autoGradeOnSubmit(submissionId);
+        this.logger.log(
+          `Auto-grading completed: ${gradingResult.standardScore.toFixed(2)}%`,
+        );
       } catch (error) {
-        // Log error but don't fail submission
-        console.error(`Failed to auto-grade submission ${submissionId}:`, error);
+        this.logger.error(`Auto-grading failed for submission ${submissionId}:`, error);
+        // Don't fail the submission if grading fails
+        // Can be re-graded later
       }
     }
 
@@ -349,10 +358,19 @@ export class SubmissionsService {
       submittedAt: submission.submittedAt,
       answeredQuestions,
       totalQuestions,
+      testType: submission.test.testType,
       message:
         submission.test.testType === TestType.ACHIEVEMENT
-          ? 'Test submitted and grading started'
+          ? 'Test submitted and graded automatically'
           : 'Test submitted successfully',
+      grading: gradingResult
+        ? {
+            totalScore: gradingResult.totalRawScore,
+            maxScore: gradingResult.maxScore,
+            standardScore: gradingResult.standardScore,
+            accuracy: gradingResult.accuracy,
+          }
+        : null,
     };
   }
 
