@@ -10,11 +10,12 @@ import { Repository, Like } from 'typeorm';
 import { Test } from '../../database/entities/test.entity';
 import { TestQuestion } from '../../database/entities/test-question.entity';
 import { StudentSubmission } from '../../database/entities/student-submission.entity';
+import { StudentAssignment } from '../../database/entities/student-assignment.entity';
 import { CreateTestDto } from './dto/create-test.dto';
 import { UpdateTestDto } from './dto/update-test.dto';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { TestQueryDto } from './dto/test-query.dto';
-import { TestType, TestStatus } from '@shared/types/enum';
+import { TestType, TestStatus, SubmissionStatus } from '@shared/types/enum';
 import {
   TestWithQuestions,
   TestDetailResponse,
@@ -31,6 +32,8 @@ export class TestsService {
     private readonly questionRepository: Repository<TestQuestion>,
     @InjectRepository(StudentSubmission)
     private readonly submissionRepository: Repository<StudentSubmission>,
+    @InjectRepository(StudentAssignment)
+    private readonly assignmentRepository: Repository<StudentAssignment>,
   ) {}
 
   /**
@@ -498,5 +501,146 @@ export class TestsService {
 
     test.status = TestStatus.PUBLISHED;
     return this.testRepository.save(test);
+  }
+
+  /**
+   * Get published tests for teachers (only PUBLISHED status)
+   */
+  async getPublishedTests(query: TestQueryDto): Promise<PaginatedTestResponse> {
+    const qb = this.testRepository
+      .createQueryBuilder('test')
+      .where('test.testType = :type', { type: TestType.ACHIEVEMENT })
+      .andWhere('test.status = :status', { status: TestStatus.PUBLISHED });
+
+    // Filters
+    if (query.grade) {
+      qb.andWhere('test.grade = :grade', { grade: query.grade });
+    }
+
+    if (query.level) {
+      qb.andWhere('test.level = :level', { level: query.level });
+    }
+
+    if (query.search) {
+      qb.andWhere('test.title ILIKE :search', { search: `%${query.search}%` });
+    }
+
+    // Pagination
+    const page = query.page || 1;
+    const limit = query.limit || 10;
+    qb.skip((page - 1) * limit).take(limit);
+
+    // Order by creation date
+    qb.orderBy('test.createdAt', 'DESC');
+
+    // Count total
+    const [tests, total] = await qb.getManyAndCount();
+
+    return {
+      data: tests,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  /**
+   * Get test details for teacher preview
+   */
+  async getTestDetailsForTeacher(id: string): Promise<TestDetailResponse> {
+    const test = await this.testRepository.findOne({
+      where: {
+        id,
+        testType: TestType.ACHIEVEMENT,
+        status: TestStatus.PUBLISHED,
+      },
+      relations: ['questions'],
+      order: {
+        questions: {
+          questionNumber: 'ASC',
+        },
+      },
+    });
+
+    if (!test) {
+      throw new NotFoundException('Test not found or not published');
+    }
+
+    // Group questions by unit
+    const questionsByUnit = this.groupQuestionsByUnit(test.questions);
+
+    return {
+      ...test,
+      questionCount: test.questions.length,
+      unitBreakdown: questionsByUnit,
+    } as TestDetailResponse & { questionCount: number; unitBreakdown: any[] };
+  }
+
+  /**
+   * Get test statistics
+   */
+  async getTestStatistics(testId: string) {
+    // Count total assignments
+    const totalAssignments = await this.assignmentRepository.count({
+      where: { testId },
+    });
+
+    // Count completed submissions
+    const completedSubmissions = await this.submissionRepository.count({
+      where: {
+        testId,
+        status: SubmissionStatus.GRADED,
+      },
+    });
+
+    // Get average score
+    const submissions = await this.submissionRepository.find({
+      where: {
+        testId,
+        status: SubmissionStatus.GRADED,
+      },
+      select: ['standardScore'],
+    });
+
+    const avgScore =
+      submissions.length > 0
+        ? submissions.reduce((sum, s) => sum + (s.standardScore || 0), 0) / submissions.length
+        : 0;
+
+    // Get highest score
+    const highestScore =
+      submissions.length > 0 ? Math.max(...submissions.map((s) => s.standardScore || 0)) : 0;
+
+    return {
+      totalAssignments,
+      completedSubmissions,
+      avgScore: Math.round(avgScore),
+      highestScore,
+      completionRate:
+        totalAssignments > 0 ? Math.round((completedSubmissions / totalAssignments) * 100) : 0,
+    };
+  }
+
+  /**
+   * Helper: Group questions by unit
+   */
+  private groupQuestionsByUnit(questions: TestQuestion[]) {
+    const units: Record<string, { unitName: string; questionCount: number; totalScore: number }> =
+      {};
+
+    questions.forEach((q) => {
+      const unitName = q.unitName || 'Unnamed Unit';
+      if (!units[unitName]) {
+        units[unitName] = {
+          unitName,
+          questionCount: 0,
+          totalScore: 0,
+        };
+      }
+      units[unitName].questionCount++;
+      units[unitName].totalScore += q.score;
+    });
+
+    return Object.values(units);
   }
 }

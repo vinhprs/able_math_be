@@ -14,6 +14,9 @@ import { TestsModule } from './modules/tests/tests.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { GradingModule } from './modules/grading/grading.module';
 import { ReportsModule } from './modules/reports/reports.module';
+import { StudentsModule } from './modules/students/students.module';
+import { AssignmentsModule } from './modules/assignments/assignments.module';
+import { SubmissionsModule } from './modules/submissions/submissions.module';
 
 // Guards
 
@@ -42,6 +45,9 @@ import { ReportsModule } from './modules/reports/reports.module';
     DashboardModule,
     GradingModule,
     ReportsModule,
+    StudentsModule,
+    AssignmentsModule,
+    SubmissionsModule,
   ],
   providers: [
     // Global guards are set up in main.ts, but we can also provide them here

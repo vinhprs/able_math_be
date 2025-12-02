@@ -34,9 +34,10 @@ export class PdfGeneratorService {
 
     try {
       // Generate HTML content
-      const html = type === 'ACHIEVEMENT'
-        ? AchievementReportTemplate.generate(reportData as AchievementReportData)
-        : AdtmReportTemplate.generate(reportData as AdtmReportData);
+      const html =
+        type === 'ACHIEVEMENT'
+          ? AchievementReportTemplate.generate(reportData as AchievementReportData)
+          : AdtmReportTemplate.generate(reportData as AdtmReportData);
 
       // Generate chart images (base64 encoded)
       const chartImages = await this.generateChartImages(reportData, type);
@@ -61,9 +62,10 @@ export class PdfGeneratorService {
       });
 
       // Generate PDF
-      const submissionId = type === 'ACHIEVEMENT'
-        ? (reportData as AchievementReportData).test.code
-        : (reportData as AdtmReportData).test.testCode || 'adtm';
+      const submissionId =
+        type === 'ACHIEVEMENT'
+          ? (reportData as AchievementReportData).test.code
+          : (reportData as AdtmReportData).test.testCode || 'adtm';
 
       const fileName = `${type.toLowerCase()}_${submissionId}_${Date.now()}.pdf`;
       const filePath = path.join(this.pdfStoragePath, fileName);
@@ -186,8 +188,8 @@ export class PdfGeneratorService {
 
         // Label
         const labelAngle = currentAngle + sliceAngle / 2;
-        const labelX = centerX + (radius * 0.7) * Math.cos(labelAngle);
-        const labelY = centerY + (radius * 0.7) * Math.sin(labelAngle);
+        const labelX = centerX + radius * 0.7 * Math.cos(labelAngle);
+        const labelY = centerY + radius * 0.7 * Math.sin(labelAngle);
         svgContent += `<text x="${labelX}" y="${labelY}" font-size="12" text-anchor="middle" fill="#333">${label}</text>`;
 
         currentAngle += sliceAngle;
@@ -228,4 +230,3 @@ export class PdfGeneratorService {
     return path.join(this.pdfStoragePath, fileName);
   }
 }
-

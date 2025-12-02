@@ -26,6 +26,12 @@ export class TestQueryDto {
   grade?: string;
 
   @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  level?: number;
+
+  @IsOptional()
   @IsEnum(TestStatus)
   status?: TestStatus;
 
