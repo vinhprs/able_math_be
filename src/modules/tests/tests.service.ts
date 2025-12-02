@@ -376,8 +376,6 @@ export class TestsService {
       test,
     });
 
-    console.log('question :>> ', question);
-
     // Fetch the saved question to return it
     const savedQuestion = await this.questionRepository.save(question);
 
