@@ -9,7 +9,7 @@ import {
   JoinColumn,
   Index,
 } from 'typeorm';
-import { TestType, TestStatus } from '@shared/types/enum';
+import { TestType, TestStatus, ExamType } from '@shared/types/enum';
 import { User } from './user.entity';
 import { TestQuestion } from './test-question.entity';
 import { StudentAssignment } from './student-assignment.entity';
@@ -38,7 +38,7 @@ export class Test {
   @Column()
   grade: string;
 
-  @Column()
+  @Column({ nullable: true })
   curriculum: string;
 
   @Column()
@@ -52,6 +52,20 @@ export class Test {
 
   @Column({ name: 'total_score', type: 'int', default: 0 })
   totalScore: number;
+
+  @Column({
+    name: 'exam_type',
+    type: 'enum',
+    enum: ExamType,
+    nullable: true,
+  })
+  examType: ExamType;
+
+  @Column({ name: 'pdf_filename', nullable: true })
+  pdfFilename: string;
+
+  @Column({ type: 'int', nullable: true, default: 45 })
+  duration: number;
 
   @Column({
     type: 'enum',
@@ -84,4 +98,3 @@ export class Test {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

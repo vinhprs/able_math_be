@@ -6,6 +6,7 @@
 export { User } from './user.entity';
 export { Test } from './test.entity';
 export { TestQuestion } from './test-question.entity';
+export { Unit } from './unit.entity';
 export { StudentAssignment, AssignmentStatus } from './student-assignment.entity';
 export { StudentSubmission } from './student-submission.entity';
 export { StudentAnswer } from './student-answer.entity';
