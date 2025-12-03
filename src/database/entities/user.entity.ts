@@ -6,11 +6,13 @@ import {
   UpdateDateColumn,
   Index,
   OneToMany,
+  ManyToMany,
 } from 'typeorm';
 import { UserRole } from '@shared/types/enum';
 import { Test } from './test.entity';
 import { StudentAssignment } from './student-assignment.entity';
 import { StudentSubmission } from './student-submission.entity';
+import { Class } from './class.entity';
 
 @Entity('users')
 export class User {
@@ -69,6 +71,12 @@ export class User {
 
   @OneToMany(() => StudentSubmission, (submission) => submission.gradedBy)
   gradedSubmissions: StudentSubmission[];
+
+  @OneToMany(() => Class, (classEntity) => classEntity.teacher)
+  classes: Class[];
+
+  @ManyToMany(() => Class, (classEntity) => classEntity.students)
+  enrolledClasses: Class[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

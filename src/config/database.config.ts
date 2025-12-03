@@ -10,6 +10,7 @@ import {
   StudentAnswer,
   AdtmSubmission,
   ReportCard,
+  Class,
 } from '../database/entities';
 
 export default registerAs(
@@ -31,6 +32,7 @@ export default registerAs(
       StudentAnswer,
       AdtmSubmission,
       ReportCard,
+      Class,
     ],
     synchronize: process.env.NODE_ENV === 'development',
     logging: false,
