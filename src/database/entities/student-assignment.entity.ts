@@ -12,6 +12,7 @@ import {
 import { Test } from './test.entity';
 import { User } from './user.entity';
 import { StudentSubmission } from './student-submission.entity';
+import { Class } from './class.entity';
 
 export enum AssignmentStatus {
   PENDING = 'PENDING',
@@ -47,6 +48,13 @@ export class StudentAssignment {
   @Index()
   status: AssignmentStatus;
 
+  @Column({ name: 'class_id', nullable: true })
+  @Index()
+  classId: string | null;
+
+  @Column({ type: 'text', nullable: true })
+  instructions: string | null;
+
   // Relations
   @ManyToOne(() => Test, (test) => test.assignments)
   @JoinColumn({ name: 'test_id' })
@@ -60,6 +68,10 @@ export class StudentAssignment {
   @JoinColumn({ name: 'assigned_by_id' })
   assignedBy: User;
 
+  @ManyToOne(() => Class, { onDelete: 'CASCADE', nullable: true })
+  @JoinColumn({ name: 'class_id' })
+  class: Class | null;
+
   @OneToMany(() => StudentSubmission, (submission) => submission.assignment)
   submissions: StudentSubmission[];
 
@@ -69,4 +81,3 @@ export class StudentAssignment {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

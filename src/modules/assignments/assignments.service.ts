@@ -13,8 +13,10 @@ import {
 import { StudentSubmission } from '../../database/entities/student-submission.entity';
 import { Test } from '../../database/entities/test.entity';
 import { User } from '../../database/entities/user.entity';
+import { Class } from '../../database/entities/class.entity';
 import { CreateAssignmentDto } from './dto/create-assignment.dto';
 import { BulkAssignDto } from './dto/bulk-assign.dto';
+import { AssignToClassDto } from './dto/assign-to-class.dto';
 import { AssignmentQueryDto } from './dto/assignment-query.dto';
 import { StudentAssignmentQueryDto } from './dto/student-assignment-query.dto';
 import { TestStatus, UserRole } from '@shared/types/enum';
@@ -30,6 +32,8 @@ export class AssignmentsService {
     private testRepo: Repository<Test>,
     @InjectRepository(User)
     private userRepo: Repository<User>,
+    @InjectRepository(Class)
+    private classRepo: Repository<Class>,
   ) {}
 
   /**
@@ -85,6 +89,91 @@ export class AssignmentsService {
       ...assignment,
       test: { id: test.id, title: test.title, testCode: test.testCode },
       student: { id: student.id, fullName: student.fullName },
+    };
+  }
+
+  /**
+   * Assign test to all students in a class
+   */
+  async assignToClass(assignDto: AssignToClassDto, teacherId: string) {
+    // 1. Validate test exists and is published
+    const test = await this.testRepo.findOne({
+      where: { id: assignDto.testId },
+    });
+
+    if (!test) {
+      throw new NotFoundException('Test not found');
+    }
+
+    if (test.status !== TestStatus.PUBLISHED) {
+      throw new BadRequestException('Cannot assign unpublished test');
+    }
+
+    // 2. Validate class exists and belongs to teacher
+    const classEntity = await this.classRepo.findOne({
+      where: { id: assignDto.classId },
+      relations: ['students', 'teacher'],
+    });
+
+    if (!classEntity) {
+      throw new NotFoundException('Class not found');
+    }
+
+    // Check if teacher owns the class (or is admin)
+    if (classEntity.teacherId !== teacherId) {
+      throw new ForbiddenException('You can only assign tests to your own classes');
+    }
+
+    if (!classEntity.students || classEntity.students.length === 0) {
+      throw new BadRequestException('Class has no students');
+    }
+
+    // 3. Check for existing assignments
+    const studentIds = classEntity.students.map((s) => s.id);
+    const existingAssignments = await this.assignmentRepo.find({
+      where: {
+        testId: assignDto.testId,
+        studentId: In(studentIds),
+      },
+    });
+
+    const existingStudentIds = new Set(existingAssignments.map((a) => a.studentId));
+
+    // Filter students who don't have this assignment yet
+    const studentsToAssign = classEntity.students.filter((s) => !existingStudentIds.has(s.id));
+
+    if (studentsToAssign.length === 0) {
+      throw new BadRequestException('All students in this class already have this test assigned');
+    }
+
+    // 4. Create assignments for all students
+    const deadline = assignDto.deadline ? new Date(assignDto.deadline) : undefined;
+
+    const assignments = studentsToAssign.map((student) =>
+      this.assignmentRepo.create({
+        testId: assignDto.testId,
+        studentId: student.id,
+        classId: assignDto.classId, // Link to class
+        assignedById: teacherId,
+        deadline,
+        instructions: assignDto.instructions,
+        status: AssignmentStatus.PENDING,
+      }),
+    );
+
+    // Save all assignments
+    await this.assignmentRepo.save(assignments);
+
+    // 5. Return summary
+    return {
+      message: `Test assigned to ${studentsToAssign.length} students`,
+      classId: assignDto.classId,
+      className: classEntity.name,
+      testId: test.id,
+      testTitle: test.title,
+      assignedCount: studentsToAssign.length,
+      skippedCount: existingStudentIds.size,
+      deadline: deadline?.toISOString(),
     };
   }
 
@@ -158,6 +247,7 @@ export class AssignmentsService {
       .createQueryBuilder('assignment')
       .leftJoinAndSelect('assignment.test', 'test')
       .leftJoinAndSelect('assignment.student', 'student')
+      .leftJoinAndSelect('assignment.class', 'class')
       .where('assignment.assignedById = :teacherId', { teacherId });
 
     // Filters
@@ -171,6 +261,10 @@ export class AssignmentsService {
 
     if (query.studentId) {
       qb.andWhere('assignment.studentId = :studentId', { studentId: query.studentId });
+    }
+
+    if (query.classId) {
+      qb.andWhere('assignment.classId = :classId', { classId: query.classId });
     }
 
     // Pagination
@@ -197,6 +291,12 @@ export class AssignmentsService {
           fullName: a.student.fullName,
           grade: a.student.grade,
         },
+        class: a.class
+          ? {
+              id: a.class.id,
+              name: a.class.name,
+            }
+          : null,
         status: a.status,
         deadline: a.deadline,
         createdAt: a.createdAt,

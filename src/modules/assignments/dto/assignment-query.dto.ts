@@ -16,6 +16,10 @@ export class AssignmentQueryDto {
   studentId?: string;
 
   @IsOptional()
+  @IsUUID()
+  classId?: string;
+
+  @IsOptional()
   @Type(() => Number)
   @IsInt()
   @Min(1)

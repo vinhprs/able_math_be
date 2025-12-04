@@ -342,9 +342,7 @@ export class SubmissionsService {
       try {
         this.logger.log(`Auto-grading Achievement test submission ${submissionId}`);
         gradingResult = await this.gradingService.autoGradeOnSubmit(submissionId);
-        this.logger.log(
-          `Auto-grading completed: ${gradingResult.standardScore.toFixed(2)}%`,
-        );
+        this.logger.log(`Auto-grading completed: ${gradingResult.standardScore.toFixed(2)}%`);
       } catch (error) {
         this.logger.error(`Auto-grading failed for submission ${submissionId}:`, error);
         // Don't fail the submission if grading fails

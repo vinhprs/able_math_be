@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, DataSource } from 'typeorm';
+import { Repository, DataSource, EntityManager } from 'typeorm';
 import { TestQuestion } from '../../database/entities/test-question.entity';
 import { StudentAnswer } from '../../database/entities/student-answer.entity';
 import { StudentSubmission } from '../../database/entities/student-submission.entity';
@@ -35,7 +35,7 @@ export class AchievementGradingService {
   async gradeSubmission(submissionId: string): Promise<GradingResult> {
     // Use transaction to ensure data consistency
     return await this.dataSource.transaction(async (manager) => {
-      // Get submission with answers
+      // Get submission with answers - answers should already have studentAnswer values
       const submission = await manager.getRepository(StudentSubmission).findOne({
         where: { id: submissionId },
         relations: ['answers', 'test'],
@@ -68,13 +68,35 @@ export class AchievementGradingService {
       // Sort questions by question number
       const questions = test.questions.sort((a, b) => a.questionNumber - b.questionNumber);
 
+      // Validate submissionId before creating answers
+      if (!submissionId || submissionId.trim() === '') {
+        throw new BadRequestException(`Invalid submissionId: ${submissionId}`);
+      }
+
       // Get or create answers for all questions
-      const answers = await this.getOrCreateAnswers(manager, submissionId, questions);
+      // Pass submission.answers to preserve existing studentAnswer values
+      this.logger.log(
+        `Submission has ${submission.answers?.length || 0} existing answers. Answers with studentAnswer: ${submission.answers?.filter((a) => a.studentAnswer).length || 0}`,
+      );
+
+      const answers = await this.getOrCreateAnswers(
+        manager,
+        submission.id,
+        questions,
+        submission.answers || [],
+      );
+
+      // Log answers for debugging
+      this.logger.log(
+        `Grading ${answers.length} answers for submission ${submissionId}. Answers with studentAnswer: ${answers.filter((a) => a.studentAnswer).length}`,
+      );
 
       // Grade each answer
       let totalRawScore = 0;
       let correctCount = 0;
       let incorrectCount = 0;
+
+      const answerRepo = manager.getRepository(StudentAnswer);
 
       for (const question of questions) {
         const answer = answers.find((a) => a.questionId === question.id);
@@ -92,9 +114,24 @@ export class AchievementGradingService {
         // Calculate score earned
         const scoreEarned = isCorrect ? question.score : 0;
 
-        // Update answer record
+        // Update answer properties for local use
         answer.isCorrect = isCorrect;
         answer.scoreEarned = scoreEarned;
+
+        // Use raw SQL update to ensure is_correct is definitely updated
+        // This bypasses any TypeORM entity tracking issues
+        const updateQuery = `
+          UPDATE student_answers
+          SET is_correct = $1, score_earned = $2, updated_at = NOW()
+          WHERE id = $3
+        `;
+
+        await manager.query(updateQuery, [isCorrect, scoreEarned, answer.id]);
+
+        // Log the update for debugging
+        this.logger.log(
+          `Updated answer ${answer.id} for question ${question.id}: isCorrect=${isCorrect}, scoreEarned=${scoreEarned}, studentAnswer="${answer.studentAnswer}"`,
+        );
 
         // Update counters
         totalRawScore += scoreEarned;
@@ -103,8 +140,6 @@ export class AchievementGradingService {
         } else if (answer.studentAnswer && answer.studentAnswer.trim() !== '') {
           incorrectCount++;
         }
-
-        await manager.getRepository(StudentAnswer).save(answer);
       }
 
       // Calculate max score
@@ -129,7 +164,18 @@ export class AchievementGradingService {
       submission.status = SubmissionStatus.GRADED;
       submission.gradedAt = new Date();
 
-      await manager.getRepository(StudentSubmission).save(submission);
+      // Save submission using update query to avoid cascade issues with answers
+      // We've already updated all answers above using raw SQL
+      const submissionRepo = manager.getRepository(StudentSubmission);
+      await submissionRepo.update(
+        { id: submission.id },
+        {
+          totalScore: submission.totalScore,
+          standardScore: submission.standardScore,
+          status: submission.status,
+          gradedAt: submission.gradedAt,
+        },
+      );
 
       // Build and return grading result
       const result: GradingResult = {
@@ -178,31 +224,118 @@ export class AchievementGradingService {
    * @returns Array of student answers
    */
   private async getOrCreateAnswers(
-    manager: any,
+    manager: EntityManager,
     submissionId: string,
     questions: TestQuestion[],
+    existingAnswers: StudentAnswer[] = [],
   ): Promise<StudentAnswer[]> {
+    // Validate submissionId
+    if (!submissionId) {
+      throw new BadRequestException('submissionId is required to create answers');
+    }
+
     const answers: StudentAnswer[] = [];
 
     for (const question of questions) {
       const answerRepo = manager.getRepository(StudentAnswer);
-      let answer = await answerRepo.findOne({
-        where: {
-          submissionId,
-          questionId: question.id,
-        },
-      });
+
+      // First, try to find in existing answers from submission (preserves studentAnswer)
+      let answer = existingAnswers.find(
+        (a) => a.questionId === question.id && a.submissionId === submissionId,
+      );
+
+      // If not found in existing, fetch from database
+      if (!answer) {
+        const dbAnswer = await answerRepo.findOne({
+          where: {
+            submissionId,
+            questionId: question.id,
+          },
+        });
+        answer = dbAnswer || undefined;
+      }
 
       if (!answer) {
         // Create new answer record if it doesn't exist
-        answer = answerRepo.create({
+        // Check if there's a studentAnswer in existingAnswers that we should preserve
+        const existingAnswerWithValue = existingAnswers.find((a) => a.questionId === question.id);
+        const studentAnswerValue = existingAnswerWithValue?.studentAnswer || null;
+
+        // Validate submissionId first
+        if (!submissionId || typeof submissionId !== 'string' || submissionId.trim() === '') {
+          this.logger.error(
+            `submissionId is invalid when creating answer for submission ${submissionId}, question ${question.id}`,
+          );
+          throw new BadRequestException(
+            `submissionId is required but was invalid for question ${question.id}`,
+          );
+        }
+
+        // Use raw SQL insert to ensure submission_id is properly set
+        // This bypasses any TypeORM entity mapping issues
+        // Double-check submissionId is valid before inserting
+        if (!submissionId || typeof submissionId !== 'string' || submissionId.trim() === '') {
+          this.logger.error(
+            `submissionId is invalid right before insert: ${submissionId}, type: ${typeof submissionId}`,
+          );
+          throw new BadRequestException(
+            `submissionId is required but was invalid for question ${question.id}`,
+          );
+        }
+
+        if (!question.id || typeof question.id !== 'string') {
+          this.logger.error(`question.id is invalid: ${question.id}`);
+          throw new BadRequestException(`Invalid question ID for question ${question.id}`);
+        }
+
+        // Use parameterized query with explicit type casting
+        // Preserve studentAnswer if it exists in existingAnswers
+        const insertQuery = `
+          INSERT INTO student_answers (id, submission_id, question_id, student_answer, score_earned, is_correct, created_at, updated_at)
+          VALUES (gen_random_uuid(), $1::uuid, $2::uuid, $3, $4, $5, NOW(), NOW())
+          RETURNING id
+        `;
+
+        this.logger.debug(
+          `Inserting answer for submission ${submissionId}, question ${question.id}, studentAnswer: ${studentAnswerValue || 'null'}`,
+        );
+
+        const insertResult = await manager.query(insertQuery, [
           submissionId,
-          questionId: question.id,
-          studentAnswer: null,
-          scoreEarned: null,
-          isCorrect: null,
+          question.id,
+          studentAnswerValue, // Use existing studentAnswer if available, otherwise null
+          null,
+          null,
+        ]);
+
+        if (!insertResult || !insertResult[0] || !insertResult[0].id) {
+          throw new BadRequestException(`Failed to insert answer for question ${question.id}`);
+        }
+
+        const insertedId = insertResult[0].id;
+
+        // Fetch the created answer to return
+        const fetchedAnswer = await answerRepo.findOne({
+          where: { id: insertedId },
         });
-        answer = await answerRepo.save(answer);
+
+        if (!fetchedAnswer) {
+          throw new BadRequestException(
+            `Failed to retrieve created answer for question ${question.id}`,
+          );
+        }
+
+        answer = fetchedAnswer;
+
+        // Final verification that submissionId is set
+        if (!answer.submissionId) {
+          this.logger.error(
+            `Answer created but submissionId is null for answer ${insertedId}, submission ${submissionId}`,
+          );
+          throw new BadRequestException(
+            `Answer created but submissionId is missing for question ${question.id}`,
+          );
+        }
       }
 
       answers.push(answer);

@@ -14,6 +14,7 @@ import {
 import { AssignmentsService } from './assignments.service';
 import { CreateAssignmentDto } from './dto/create-assignment.dto';
 import { BulkAssignDto } from './dto/bulk-assign.dto';
+import { AssignToClassDto } from './dto/assign-to-class.dto';
 import { AssignmentQueryDto } from './dto/assignment-query.dto';
 import { ExtendDeadlineDto } from './dto/extend-deadline.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -48,6 +49,20 @@ export class AssignmentsController {
   @HttpCode(HttpStatus.CREATED)
   async bulkAssign(@Body() bulkDto: BulkAssignDto, @CurrentUser() user: IJwtPayload) {
     return this.assignmentsService.bulkAssign(bulkDto, user.sub);
+  }
+
+  /**
+   * Assign test to all students in a class
+   * Teacher only
+   */
+  @Post('assign-to-class')
+  @Roles(UserRole.TEACHER, UserRole.ADMIN)
+  @HttpCode(HttpStatus.CREATED)
+  async assignToClass(
+    @Body() assignDto: AssignToClassDto,
+    @CurrentUser() user: IJwtPayload,
+  ) {
+    return this.assignmentsService.assignToClass(assignDto, user.sub);
   }
 
   /**

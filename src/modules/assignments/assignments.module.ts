@@ -7,9 +7,10 @@ import { StudentAssignment } from '../../database/entities/student-assignment.en
 import { StudentSubmission } from '../../database/entities/student-submission.entity';
 import { Test } from '../../database/entities/test.entity';
 import { User } from '../../database/entities/user.entity';
+import { Class } from '../../database/entities/class.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([StudentAssignment, StudentSubmission, Test, User])],
+  imports: [TypeOrmModule.forFeature([StudentAssignment, StudentSubmission, Test, User, Class])],
   controllers: [AssignmentsController, StudentAssignmentsController],
   providers: [AssignmentsService],
   exports: [AssignmentsService],
