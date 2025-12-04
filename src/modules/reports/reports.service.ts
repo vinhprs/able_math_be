@@ -1,9 +1,15 @@
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { StudentSubmission } from '../../database/entities/student-submission.entity';
 import { AdtmSubmission } from '../../database/entities/adtm-submission.entity';
-import { ReportCard } from '../../database/entities/report-card.entity';
+import { ReportCard, ReportStatus } from '../../database/entities/report-card.entity';
 import { Test } from '../../database/entities/test.entity';
 import { User } from '../../database/entities/user.entity';
 import { TestType, SubmissionStatus } from '@shared/types/enum';
@@ -220,7 +226,7 @@ export class ReportsService {
   }
 
   /**
-   * Get existing report card
+   * Get existing report card by submission ID
    * @param submissionId - ID of the submission
    * @returns Report card if exists
    */
@@ -228,6 +234,159 @@ export class ReportsService {
     return await this.reportCardRepository.findOne({
       where: { submissionId },
       relations: ['student', 'test'],
+    });
+  }
+
+  /**
+   * Get report card by report ID
+   * @param reportId - ID of the report
+   * @returns Report card if exists
+   */
+  async getReportCardById(reportId: string): Promise<ReportCard | null> {
+    return await this.reportCardRepository.findOne({
+      where: { id: reportId },
+      relations: ['student', 'test', 'test.creator', 'submission'],
+    });
+  }
+
+  /**
+   * Get pending reports for teacher to review
+   * @param teacherId - ID of the teacher
+   * @returns Array of pending reports
+   */
+  async getPendingReports(teacherId: string) {
+    // Get reports from submissions of tests created by this teacher
+    const reports = await this.reportCardRepository
+      .createQueryBuilder('report')
+      .leftJoinAndSelect('report.submission', 'submission')
+      .leftJoinAndSelect('report.student', 'student')
+      .leftJoinAndSelect('report.test', 'test')
+      .leftJoinAndSelect('test.creator', 'creator')
+      .where('report.status = :status', { status: ReportStatus.PENDING_REVIEW })
+      .orderBy('report.createdAt', 'DESC')
+      .getMany();
+
+    return reports.map((report) => ({
+      id: report.id,
+      submissionId: report.submissionId,
+      studentName: report.student.fullName,
+      testTitle: report.test.title,
+      testCode: report.test.testCode,
+      createdAt: report.createdAt,
+      totalScore: report.submission.totalScore,
+    }));
+  }
+
+  /**
+   * Approve report
+   * @param reportId - ID of the report
+   * @param teacherId - ID of the teacher approving
+   * @param comment - Optional comment from teacher
+   * @returns Updated report card
+   */
+  async approveReport(reportId: string, teacherId: string, comment?: string): Promise<ReportCard> {
+    const report = await this.reportCardRepository.findOne({
+      where: { id: reportId },
+      relations: ['test', 'test.creator'],
+    });
+
+    if (!report) {
+      throw new NotFoundException('Report not found');
+    }
+
+    if (report.status !== ReportStatus.PENDING_REVIEW) {
+      throw new BadRequestException('Report is not pending review');
+    }
+
+    // Update report
+    report.status = ReportStatus.APPROVED;
+    report.reviewedById = teacherId;
+    report.reviewedAt = new Date();
+    report.reviewComment = comment || null;
+
+    await this.reportCardRepository.save(report);
+
+    return report;
+  }
+
+  /**
+   * Publish report (make visible to student)
+   * @param reportId - ID of the report
+   * @param teacherId - ID of the teacher publishing
+   * @returns Updated report card
+   */
+  async publishReport(reportId: string, teacherId: string): Promise<ReportCard> {
+    const report = await this.reportCardRepository.findOne({
+      where: { id: reportId },
+      relations: ['test', 'test.creator'],
+    });
+
+    if (!report) {
+      throw new NotFoundException('Report not found');
+    }
+
+    if (report.status !== ReportStatus.APPROVED) {
+      throw new BadRequestException('Report must be approved before publishing');
+    }
+
+    // Publish
+    report.status = ReportStatus.PUBLISHED;
+    report.publishedAt = new Date();
+    report.isPublished = true;
+
+    await this.reportCardRepository.save(report);
+
+    return report;
+  }
+
+  /**
+   * Reject report
+   * @param reportId - ID of the report
+   * @param teacherId - ID of the teacher rejecting
+   * @param reason - Reason for rejection
+   * @returns Updated report card
+   */
+  async rejectReport(reportId: string, teacherId: string, reason: string): Promise<ReportCard> {
+    const report = await this.reportCardRepository.findOne({
+      where: { id: reportId },
+      relations: ['test', 'test.creator'],
+    });
+
+    if (!report) {
+      throw new NotFoundException('Report not found');
+    }
+
+    if (report.test.creatorId !== teacherId) {
+      throw new ForbiddenException('You can only reject reports for your own tests');
+    }
+
+    if (report.status !== ReportStatus.PENDING_REVIEW) {
+      throw new BadRequestException('Report is not pending review');
+    }
+
+    report.status = ReportStatus.REJECTED;
+    report.reviewedById = teacherId;
+    report.reviewedAt = new Date();
+    report.reviewComment = reason;
+
+    await this.reportCardRepository.save(report);
+
+    return report;
+  }
+
+  /**
+   * Get published reports for student
+   * @param studentId - ID of the student
+   * @returns Array of published reports
+   */
+  async getPublishedReportsForStudent(studentId: string) {
+    return await this.reportCardRepository.find({
+      where: {
+        studentId,
+        status: ReportStatus.PUBLISHED,
+      },
+      relations: ['test', 'submission'],
+      order: { publishedAt: 'DESC' },
     });
   }
 
@@ -609,9 +768,14 @@ export class ReportsService {
         studentId: submission.studentId,
         testId: submission.testId,
         reportData: reportCardData,
+        status: ReportStatus.PENDING_REVIEW,
       });
     } else {
       reportCard.reportData = reportCardData;
+      // If report is being regenerated, reset status to pending review unless it's already published
+      if (reportCard.status !== ReportStatus.PUBLISHED) {
+        reportCard.status = ReportStatus.PENDING_REVIEW;
+      }
     }
 
     await this.reportCardRepository.save(reportCard);

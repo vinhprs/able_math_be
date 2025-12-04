@@ -1,11 +1,24 @@
-import { Controller, Get, Post, Param, UseGuards, Res, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  UseGuards,
+  Res,
+  NotFoundException,
+  Body,
+  ForbiddenException,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
-import { UserRole } from '@shared/types/enum';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { UserRole, TestType } from '@shared/types/enum';
+import { IJwtPayload } from '@shared/types/users.types';
 import { ReportsService } from './reports.service';
 import { PdfGeneratorService } from './pdf-generator.service';
+import { ReportStatus } from '../../database/entities/report-card.entity';
 import * as fs from 'fs';
 
 @Controller('reports')
@@ -15,6 +28,97 @@ export class ReportsController {
     private readonly reportsService: ReportsService,
     private readonly pdfGeneratorService: PdfGeneratorService,
   ) {}
+
+  // TEACHER ENDPOINTS
+
+  /**
+   * Get pending reports for review
+   * GET /api/reports/pending
+   */
+  @Get('pending')
+  @Roles(UserRole.TEACHER, UserRole.ADMIN)
+  async getPendingReports(@CurrentUser() user: IJwtPayload) {
+    return this.reportsService.getPendingReports(user.sub);
+  }
+
+  /**
+   * Approve report
+   * POST /api/reports/:reportId/approve
+   */
+  @Post(':reportId/approve')
+  @Roles(UserRole.TEACHER, UserRole.ADMIN)
+  async approveReport(
+    @Param('reportId') reportId: string,
+    @Body() body: { comment?: string },
+    @CurrentUser() user: IJwtPayload,
+  ) {
+    return this.reportsService.approveReport(reportId, user.sub, body.comment);
+  }
+
+  /**
+   * Publish report to student
+   * POST /api/reports/:reportId/publish
+   */
+  @Post(':reportId/publish')
+  @Roles(UserRole.TEACHER, UserRole.ADMIN)
+  async publishReport(@Param('reportId') reportId: string, @CurrentUser() user: IJwtPayload) {
+    return this.reportsService.publishReport(reportId, user.sub);
+  }
+
+  /**
+   * Reject report
+   * POST /api/reports/:reportId/reject
+   */
+  @Post(':reportId/reject')
+  @Roles(UserRole.TEACHER, UserRole.ADMIN)
+  async rejectReport(
+    @Param('reportId') reportId: string,
+    @Body() body: { reason: string },
+    @CurrentUser() user: IJwtPayload,
+  ) {
+    return this.reportsService.rejectReport(reportId, user.sub, body.reason);
+  }
+
+  // STUDENT ENDPOINTS
+
+  /**
+   * Get my published reports
+   * GET /api/reports/student/my-reports
+   */
+  @Get('student/my-reports')
+  @Roles(UserRole.STUDENT)
+  async getMyReports(@CurrentUser() user: IJwtPayload) {
+    return this.reportsService.getPublishedReportsForStudent(user.sub);
+  }
+
+  /**
+   * Get published report detail
+   * GET /api/reports/student/:reportId
+   */
+  @Get('student/:reportId')
+  @Roles(UserRole.STUDENT)
+  async getPublishedReport(@Param('reportId') reportId: string, @CurrentUser() user: IJwtPayload) {
+    const report = await this.reportsService.getReportCardById(reportId);
+
+    if (!report) {
+      throw new NotFoundException('Report not found');
+    }
+
+    if (report.studentId !== user.sub) {
+      throw new ForbiddenException('Not your report');
+    }
+
+    if (report.status !== ReportStatus.PUBLISHED) {
+      throw new ForbiddenException('Report not published yet');
+    }
+
+    // Return report data based on test type
+    if (report.test.testType === TestType.ACHIEVEMENT) {
+      return this.reportsService.generateAchievementReport(report.submissionId);
+    } else {
+      return this.reportsService.generateAdtmReport(report.submissionId);
+    }
+  }
 
   /**
    * Get Achievement Test report
@@ -34,6 +138,36 @@ export class ReportsController {
   @Roles(UserRole.ADMIN, UserRole.TEACHER, UserRole.STUDENT)
   async getAdtmReport(@Param('submissionId') submissionId: string) {
     return await this.reportsService.generateAdtmReport(submissionId);
+  }
+
+  /**
+   * Get PDF file directly (alternative endpoint)
+   * GET /api/reports/pdf/:fileName
+   */
+  @Get('pdf/:fileName')
+  @Roles(UserRole.ADMIN, UserRole.TEACHER, UserRole.STUDENT)
+  async getPdfFile(@Param('fileName') fileName: string, @Res() res: Response) {
+    const filePath = this.pdfGeneratorService.getPdfPath(fileName);
+
+    try {
+      // Check if file exists
+      if (!fs.existsSync(filePath)) {
+        throw new NotFoundException(`PDF file not found: ${fileName}`);
+      }
+
+      // Set headers
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
+
+      // Stream file
+      const fileStream = fs.createReadStream(filePath);
+      fileStream.pipe(res);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new NotFoundException(`PDF file not found: ${fileName}`);
+    }
   }
 
   /**
@@ -86,36 +220,6 @@ export class ReportsController {
       // Set headers
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
-
-      // Stream file
-      const fileStream = fs.createReadStream(filePath);
-      fileStream.pipe(res);
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new NotFoundException(`PDF file not found: ${fileName}`);
-    }
-  }
-
-  /**
-   * Get PDF file directly (alternative endpoint)
-   * GET /api/reports/pdf/:fileName
-   */
-  @Get('pdf/:fileName')
-  @Roles(UserRole.ADMIN, UserRole.TEACHER, UserRole.STUDENT)
-  async getPdfFile(@Param('fileName') fileName: string, @Res() res: Response) {
-    const filePath = this.pdfGeneratorService.getPdfPath(fileName);
-
-    try {
-      // Check if file exists
-      if (!fs.existsSync(filePath)) {
-        throw new NotFoundException(`PDF file not found: ${fileName}`);
-      }
-
-      // Set headers
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
 
       // Stream file
       const fileStream = fs.createReadStream(filePath);

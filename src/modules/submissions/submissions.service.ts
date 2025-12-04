@@ -19,6 +19,7 @@ import { StartTestDto } from './dto/start-test.dto';
 import { SaveAnswerDto } from './dto/save-answer.dto';
 import { SubmissionStatus, TestType } from '@shared/types/enum';
 import { GradingService } from '../grading/grading.service';
+import { ReportsService } from '../reports/reports.service';
 
 @Injectable()
 export class SubmissionsService {
@@ -37,6 +38,7 @@ export class SubmissionsService {
     private questionRepo: Repository<TestQuestion>,
     private dataSource: DataSource,
     private gradingService: GradingService,
+    private reportsService: ReportsService,
   ) {}
 
   /**
@@ -338,11 +340,28 @@ export class SubmissionsService {
 
     // AUTO-GRADE Achievement tests
     let gradingResult = null;
+    let reportGenerated = false;
+
     if (submission.test.testType === TestType.ACHIEVEMENT) {
       try {
         this.logger.log(`Auto-grading Achievement test submission ${submissionId}`);
         gradingResult = await this.gradingService.autoGradeOnSubmit(submissionId);
         this.logger.log(`Auto-grading completed: ${gradingResult.standardScore.toFixed(2)}%`);
+
+        // AUTO-GENERATE REPORT CARD
+        try {
+          this.logger.log(`Auto-generating report card for submission ${submissionId}`);
+          await this.reportsService.generateAchievementReport(submissionId);
+          reportGenerated = true;
+          this.logger.log(`Report card generated successfully for submission ${submissionId}`);
+        } catch (reportError) {
+          this.logger.error(
+            `Failed to generate report for submission ${submissionId}:`,
+            reportError,
+          );
+          // Don't fail the submission if report generation fails
+          // Report can be generated later by teacher/admin
+        }
       } catch (error) {
         this.logger.error(`Auto-grading failed for submission ${submissionId}:`, error);
         // Don't fail the submission if grading fails
@@ -359,16 +378,20 @@ export class SubmissionsService {
       testType: submission.test.testType,
       message:
         submission.test.testType === TestType.ACHIEVEMENT
-          ? 'Test submitted and graded automatically'
+          ? reportGenerated
+            ? 'Test submitted, graded, and report generated successfully'
+            : 'Test submitted and graded successfully'
           : 'Test submitted successfully',
       grading: gradingResult
         ? {
-            totalScore: gradingResult.totalRawScore,
+            totalRawScore: gradingResult.totalRawScore,
             maxScore: gradingResult.maxScore,
             standardScore: gradingResult.standardScore,
-            accuracy: gradingResult.accuracy,
+            correctCount: gradingResult.correctCount,
+            incorrectCount: gradingResult.incorrectCount,
           }
         : null,
+      reportGenerated, // Indicate if report was created
     };
   }
 

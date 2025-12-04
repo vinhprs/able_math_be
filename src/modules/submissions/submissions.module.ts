@@ -8,6 +8,7 @@ import { StudentAssignment } from '../../database/entities/student-assignment.en
 import { Test } from '../../database/entities/test.entity';
 import { TestQuestion } from '../../database/entities/test-question.entity';
 import { GradingModule } from '../grading/grading.module';
+import { ReportsModule } from '../reports/reports.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { GradingModule } from '../grading/grading.module';
       TestQuestion,
     ]),
     GradingModule,
+    ReportsModule,
   ],
   controllers: [SubmissionsController],
   providers: [SubmissionsService],
