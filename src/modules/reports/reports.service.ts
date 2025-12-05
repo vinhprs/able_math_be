@@ -238,7 +238,7 @@ export class ReportsService {
   async getReportCard(submissionId: string): Promise<ReportCard | null> {
     return await this.reportCardRepository.findOne({
       where: { submissionId },
-      relations: ['student', 'test'],
+      relations: ['student', 'test', 'test.creator'],
     });
   }
 
@@ -268,6 +268,7 @@ export class ReportsService {
       .leftJoinAndSelect('report.test', 'test')
       .leftJoinAndSelect('test.creator', 'creator')
       .where('report.status = :status', { status: ReportStatus.PENDING_REVIEW })
+      .andWhere('test.creatorId = :teacherId', { teacherId })
       .orderBy('report.createdAt', 'DESC')
       .getMany();
 
@@ -279,6 +280,55 @@ export class ReportsService {
       testCode: report.test.testCode,
       createdAt: report.createdAt,
       totalScore: report.submission.totalScore,
+    }));
+  }
+
+  /**
+   * Get all reports for teacher (with optional filters)
+   * Only returns reports from tests created by this teacher
+   * @param teacherId - ID of the teacher
+   * @param filters - Optional filters (status, testType)
+   * @returns Array of reports
+   */
+  async getAllReportsForTeacher(
+    teacherId: string,
+    filters?: {
+      status?: ReportStatus;
+      testType?: TestType;
+    },
+  ) {
+    const queryBuilder = this.reportCardRepository
+      .createQueryBuilder('report')
+      .leftJoinAndSelect('report.submission', 'submission')
+      .leftJoinAndSelect('report.student', 'student')
+      .leftJoinAndSelect('report.test', 'test')
+      .leftJoinAndSelect('test.creator', 'creator')
+      .where('student.createdBy = :teacherId', { teacherId });
+
+    // Apply filters
+    if (filters?.status) {
+      queryBuilder.andWhere('report.status = :status', { status: filters.status });
+    }
+
+    if (filters?.testType) {
+      queryBuilder.andWhere('test.testType = :testType', { testType: filters.testType });
+    }
+
+    const reports = await queryBuilder.orderBy('report.createdAt', 'DESC').getMany();
+
+    return reports.map((report) => ({
+      id: report.id,
+      submissionId: report.submissionId,
+      studentName: report.student.fullName,
+      studentId: report.studentId,
+      testTitle: report.test.title,
+      testCode: report.test.testCode,
+      testType: report.test.testType,
+      status: report.status,
+      createdAt: report.createdAt,
+      updatedAt: report.updatedAt,
+      totalScore: report.submission?.totalScore || 0,
+      pdfUrl: report.pdfUrl,
     }));
   }
 
@@ -939,10 +989,19 @@ export class ReportsService {
       });
     } else {
       reportCard.reportData = reportCardData;
-      // If report is being regenerated, reset status to pending review unless it's already published
-      if (reportCard.status !== ReportStatus.PUBLISHED) {
+      // If report is being regenerated, preserve the current status
+      // Don't reset status if it's already APPROVED, PUBLISHED, or REJECTED
+      // Only set to PENDING_REVIEW if it's a new report or status is null/undefined
+      if (
+        !reportCard.status ||
+        reportCard.status === ReportStatus.PENDING_REVIEW ||
+        reportCard.status === ReportStatus.REJECTED
+      ) {
+        // Only reset to PENDING_REVIEW if status is null, PENDING_REVIEW, or REJECTED
+        // This allows regenerating rejected reports
         reportCard.status = ReportStatus.PENDING_REVIEW;
       }
+      // If status is APPROVED or PUBLISHED, keep the current status (don't reset)
     }
 
     await this.reportCardRepository.save(reportCard);

@@ -43,6 +43,82 @@ export class ReportsController {
   }
 
   /**
+   * Get all reports for teacher (with optional filters)
+   * GET /api/reports/teacher/all
+   * Query params: status, testType
+   */
+  @Get('teacher/all')
+  @Roles(UserRole.TEACHER)
+  async getAllReportsForTeacher(
+    @CurrentUser() user: IJwtPayload,
+    @Query('status') status?: string,
+    @Query('testType') testType?: string,
+  ) {
+    const filters: {
+      status?: ReportStatus;
+      testType?: TestType;
+    } = {};
+
+    if (status) {
+      filters.status = status as ReportStatus;
+    }
+
+    if (testType) {
+      filters.testType = testType as TestType;
+    }
+
+    return this.reportsService.getAllReportsForTeacher(user.sub, filters);
+  }
+
+  /**
+   * Get report card by ID for teacher
+   * GET /api/reports/teacher/:reportId
+   */
+  @Get('teacher/:reportId')
+  @Roles(UserRole.TEACHER)
+  async getReportCardForTeacher(
+    @Param('reportId') reportId: string,
+    @CurrentUser() user: IJwtPayload,
+  ) {
+    const report = await this.reportsService.getReportCardById(reportId);
+
+    if (!report) {
+      throw new NotFoundException('Report not found');
+    }
+
+    // Verify that the report belongs to a test created by this teacher
+    if (report.student.createdBy !== user.sub) {
+      throw new ForbiddenException('You can only access reports for your own tests');
+    }
+
+    return report;
+  }
+
+  /**
+   * Get report card by submission ID for teacher
+   * GET /api/reports/teacher/by-submission/:submissionId
+   */
+  @Get('teacher/by-submission/:submissionId')
+  @Roles(UserRole.TEACHER)
+  async getReportCardBySubmissionForTeacher(
+    @Param('submissionId') submissionId: string,
+    @CurrentUser() user: IJwtPayload,
+  ) {
+    const report = await this.reportsService.getReportCard(submissionId);
+
+    if (!report) {
+      throw new NotFoundException('Report not found');
+    }
+
+    // Verify that the report belongs to a test created by this teacher
+    if (report.test.creatorId !== user.sub) {
+      throw new ForbiddenException('You can only access reports for your own tests');
+    }
+
+    return report;
+  }
+
+  /**
    * Get all reports for admin (with optional filters)
    * GET /api/reports/admin/all
    * Query params: status, testType, teacherId
