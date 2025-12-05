@@ -8,6 +8,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UserRole } from '@shared/types/enum';
@@ -99,5 +100,64 @@ export class SubmissionsController {
     @CurrentUser() user: IJwtPayload,
   ) {
     return this.submissionsService.getSubmissionProgress(submissionId, user.sub);
+  }
+}
+
+/**
+ * Teacher Submissions Controller
+ * Get submissions for tests assigned by the teacher
+ */
+@Controller('teacher/submissions')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.TEACHER)
+export class TeacherSubmissionsController {
+  constructor(private readonly submissionsService: SubmissionsService) {}
+
+  /**
+   * Get all submissions for tests assigned by this teacher
+   * GET /api/teacher/submissions
+   * Query params: status, testType
+   */
+  @Get()
+  async getTeacherSubmissions(
+    @CurrentUser() user: IJwtPayload,
+    @Query('status') status?: string,
+    @Query('testType') testType?: string,
+  ) {
+    return this.submissionsService.getTeacherSubmissions(user.sub, { status, testType });
+  }
+}
+
+/**
+ * Admin Submissions Controller
+ * Get all submissions across the platform
+ */
+@Controller('admin/submissions')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.ADMIN)
+export class AdminSubmissionsController {
+  constructor(private readonly submissionsService: SubmissionsService) {}
+
+  /**
+   * Get all submissions across all teachers
+   * GET /api/admin/submissions
+   * Query params: status, testType, teacherId
+   */
+  @Get()
+  async getAllSubmissions(
+    @Query('status') status?: string,
+    @Query('testType') testType?: string,
+    @Query('teacherId') teacherId?: string,
+  ) {
+    return this.submissionsService.getAllSubmissions({ status, testType, teacherId });
+  }
+
+  /**
+   * Get all teachers for filter dropdown
+   * GET /api/admin/submissions/teachers
+   */
+  @Get('teachers')
+  async getTeachers() {
+    return this.submissionsService.getTeachers();
   }
 }

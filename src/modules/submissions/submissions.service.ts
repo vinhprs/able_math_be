@@ -15,9 +15,10 @@ import {
 } from '../../database/entities/student-assignment.entity';
 import { Test } from '../../database/entities/test.entity';
 import { TestQuestion } from '../../database/entities/test-question.entity';
+import { User } from '../../database/entities/user.entity';
 import { StartTestDto } from './dto/start-test.dto';
 import { SaveAnswerDto } from './dto/save-answer.dto';
-import { SubmissionStatus, TestType } from '@shared/types/enum';
+import { SubmissionStatus, TestType, UserRole } from '@shared/types/enum';
 import { GradingService } from '../grading/grading.service';
 import { ReportsService } from '../reports/reports.service';
 
@@ -36,6 +37,8 @@ export class SubmissionsService {
     private testRepo: Repository<Test>,
     @InjectRepository(TestQuestion)
     private questionRepo: Repository<TestQuestion>,
+    @InjectRepository(User)
+    private userRepo: Repository<User>,
     private dataSource: DataSource,
     private gradingService: GradingService,
     private reportsService: ReportsService,
@@ -433,5 +436,167 @@ export class SubmissionsService {
       percentage: Math.round((answeredQuestions / totalQuestions) * 100),
       unansweredQuestions: unansweredQuestions.map((q) => q.questionNumber),
     };
+  }
+
+  /**
+   * Get submissions for tests assigned by a teacher
+   */
+  async getTeacherSubmissions(
+    teacherId: string,
+    filters?: { status?: string; testType?: string },
+  ) {
+    const query = this.submissionRepo
+      .createQueryBuilder('submission')
+      .leftJoinAndSelect('submission.student', 'student')
+      .leftJoinAndSelect('submission.test', 'test')
+      .leftJoinAndSelect('submission.assignment', 'assignment')
+      .leftJoin('assignment.assignedBy', 'teacher')
+      .where('teacher.id = :teacherId', { teacherId });
+
+    // Apply filters
+    if (filters?.status) {
+      if (filters.status === 'PENDING') {
+        query.andWhere('submission.status IN (:...statuses)', {
+          statuses: [SubmissionStatus.NOT_STARTED, SubmissionStatus.SUBMITTED],
+        });
+      } else if (filters.status === 'IN_PROGRESS') {
+        query.andWhere('submission.status = :status', {
+          status: SubmissionStatus.IN_PROGRESS,
+        });
+      } else if (filters.status === 'GRADED') {
+        query.andWhere('submission.status = :status', {
+          status: SubmissionStatus.GRADED,
+        });
+      }
+    }
+
+    if (filters?.testType) {
+      query.andWhere('test.testType = :testType', { testType: filters.testType });
+    }
+
+    const submissions = await query
+      .orderBy('submission.submittedAt', 'DESC')
+      .addOrderBy('submission.createdAt', 'DESC')
+      .getMany();
+
+    return submissions.map((sub) => ({
+      id: sub.id,
+      student: {
+        id: sub.student.id,
+        name: sub.student.fullName,
+        grade: sub.student.grade || 'N/A',
+      },
+      test: {
+        id: sub.test.id,
+        testCode: sub.test.testCode,
+        title: sub.test.title,
+        testType: sub.test.testType,
+      },
+      status:
+        sub.status === SubmissionStatus.NOT_STARTED
+          ? 'PENDING'
+          : sub.status === SubmissionStatus.SUBMITTED
+            ? 'PENDING'
+            : sub.status === SubmissionStatus.IN_PROGRESS
+              ? 'IN_PROGRESS'
+              : 'GRADED',
+      submittedAt: sub.submittedAt || sub.createdAt,
+      gradedAt: sub.gradedAt,
+      totalScore: sub.totalScore,
+      standardScore: sub.standardScore,
+    }));
+  }
+
+  /**
+   * Get all submissions across all teachers (Admin only)
+   */
+  async getAllSubmissions(filters?: {
+    status?: string;
+    testType?: string;
+    teacherId?: string;
+  }) {
+    const query = this.submissionRepo
+      .createQueryBuilder('submission')
+      .leftJoinAndSelect('submission.student', 'student')
+      .leftJoinAndSelect('submission.test', 'test')
+      .leftJoinAndSelect('submission.assignment', 'assignment')
+      .leftJoinAndSelect('assignment.assignedBy', 'teacher');
+
+    // Apply filters
+    if (filters?.status) {
+      if (filters.status === 'PENDING') {
+        query.andWhere('submission.status IN (:...statuses)', {
+          statuses: [SubmissionStatus.NOT_STARTED, SubmissionStatus.SUBMITTED],
+        });
+      } else if (filters.status === 'IN_PROGRESS') {
+        query.andWhere('submission.status = :status', {
+          status: SubmissionStatus.IN_PROGRESS,
+        });
+      } else if (filters.status === 'GRADED') {
+        query.andWhere('submission.status = :status', {
+          status: SubmissionStatus.GRADED,
+        });
+      }
+    }
+
+    if (filters?.testType) {
+      query.andWhere('test.testType = :testType', { testType: filters.testType });
+    }
+
+    if (filters?.teacherId) {
+      query.andWhere('teacher.id = :teacherId', { teacherId: filters.teacherId });
+    }
+
+    const submissions = await query
+      .orderBy('submission.submittedAt', 'DESC')
+      .addOrderBy('submission.createdAt', 'DESC')
+      .getMany();
+
+    return submissions.map((sub) => ({
+      id: sub.id,
+      student: {
+        id: sub.student.id,
+        name: sub.student.fullName,
+        grade: sub.student.grade || 'N/A',
+      },
+      teacher: {
+        id: sub.assignment.assignedBy.id,
+        name: sub.assignment.assignedBy.fullName,
+      },
+      test: {
+        id: sub.test.id,
+        testCode: sub.test.testCode,
+        title: sub.test.title,
+        testType: sub.test.testType,
+      },
+      status:
+        sub.status === SubmissionStatus.NOT_STARTED
+          ? 'PENDING'
+          : sub.status === SubmissionStatus.SUBMITTED
+            ? 'PENDING'
+            : sub.status === SubmissionStatus.IN_PROGRESS
+              ? 'IN_PROGRESS'
+              : 'GRADED',
+      submittedAt: sub.submittedAt || sub.createdAt,
+      gradedAt: sub.gradedAt,
+      totalScore: sub.totalScore,
+      standardScore: sub.standardScore,
+    }));
+  }
+
+  /**
+   * Get all teachers for admin filter dropdown
+   */
+  async getTeachers() {
+    const teachers = await this.userRepo.find({
+      where: { role: UserRole.TEACHER, isActive: true },
+      select: ['id', 'fullName'],
+      order: { fullName: 'ASC' },
+    });
+
+    return teachers.map((teacher) => ({
+      id: teacher.id,
+      name: teacher.fullName,
+    }));
   }
 }

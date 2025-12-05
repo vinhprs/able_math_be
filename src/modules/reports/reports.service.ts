@@ -283,6 +283,56 @@ export class ReportsService {
   }
 
   /**
+   * Get all reports for admin (with optional filters)
+   * @param filters - Optional filters (status, testType, teacherId)
+   * @returns Array of reports
+   */
+  async getAllReports(filters?: {
+    status?: ReportStatus;
+    testType?: TestType;
+    teacherId?: string;
+  }) {
+    const queryBuilder = this.reportCardRepository
+      .createQueryBuilder('report')
+      .leftJoinAndSelect('report.submission', 'submission')
+      .leftJoinAndSelect('report.student', 'student')
+      .leftJoinAndSelect('report.test', 'test')
+      .leftJoinAndSelect('test.creator', 'creator');
+
+    // Apply filters
+    if (filters?.status) {
+      queryBuilder.andWhere('report.status = :status', { status: filters.status });
+    }
+
+    if (filters?.testType) {
+      queryBuilder.andWhere('test.testType = :testType', { testType: filters.testType });
+    }
+
+    if (filters?.teacherId) {
+      queryBuilder.andWhere('test.creatorId = :teacherId', { teacherId: filters.teacherId });
+    }
+
+    const reports = await queryBuilder.orderBy('report.createdAt', 'DESC').getMany();
+
+    return reports.map((report) => ({
+      id: report.id,
+      submissionId: report.submissionId,
+      studentName: report.student.fullName,
+      studentId: report.studentId,
+      testTitle: report.test.title,
+      testCode: report.test.testCode,
+      testType: report.test.testType,
+      status: report.status,
+      teacherName: report.test.creator?.fullName || 'N/A',
+      teacherId: report.test.creatorId,
+      createdAt: report.createdAt,
+      updatedAt: report.updatedAt,
+      totalScore: report.submission?.totalScore || 0,
+      pdfUrl: report.pdfUrl,
+    }));
+  }
+
+  /**
    * Approve report
    * @param reportId - ID of the report
    * @param teacherId - ID of the teacher approving

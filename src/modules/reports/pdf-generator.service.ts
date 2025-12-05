@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as puppeteer from 'puppeteer';
 import * as path from 'path';
 import * as fs from 'fs/promises';
+import { existsSync } from 'fs';
 import { AchievementReportData, AdtmReportData } from './interfaces/report-data.interface';
 import { AchievementReportTemplate } from './templates/achievement-report.template';
 import { AdtmReportTemplate } from './templates/adtm-report.template';
@@ -48,18 +49,8 @@ export class PdfGeneratorService {
         finalHtml = finalHtml.replace(`{{${key}}}`, imageData);
       }
 
-      // Launch browser
-      const browser = await puppeteer.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
-      });
-
-      const page = await browser.newPage();
-
-      // Set content
-      await page.setContent(finalHtml, {
-        waitUntil: 'networkidle0',
-      });
+      // Ensure storage directory exists
+      await this.ensureStorageDirectory();
 
       // Generate PDF
       const submissionId =
@@ -70,21 +61,115 @@ export class PdfGeneratorService {
       const fileName = `${type.toLowerCase()}_${submissionId}_${Date.now()}.pdf`;
       const filePath = path.join(this.pdfStoragePath, fileName);
 
-      await page.pdf({
-        path: filePath,
-        format: 'A4',
-        printBackground: true,
-        margin: {
-          top: '20mm',
-          right: '15mm',
-          bottom: '20mm',
-          left: '15mm',
-        },
-      });
+      // Launch browser with stability configurations
+      let browser: puppeteer.Browser | null = null;
+      try {
+        const isMacOS = process.platform === 'darwin';
+        const launchOptions: any = {
+          headless: 'new', // Use new headless mode
+          args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--disable-gpu',
+            ...(isMacOS
+              ? [
+                  '--disable-background-timer-throttling',
+                  '--disable-backgrounding-occluded-windows',
+                  '--disable-renderer-backgrounding',
+                  '--disable-features=TranslateUI',
+                  '--disable-ipc-flooding-protection',
+                ]
+              : ['--no-zygote']),
+          ],
+          timeout: 30000, // 30 second timeout for browser launch
+        };
 
-      await browser.close();
+        // Try to use system Chrome on macOS if available
+        if (isMacOS) {
+          const possibleChromePaths = [
+            '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
+            '/Applications/Chromium.app/Contents/MacOS/Chromium',
+          ];
 
-      this.logger.log(`PDF generated: ${filePath}`);
+          for (const chromePath of possibleChromePaths) {
+            if (existsSync(chromePath)) {
+              launchOptions.executablePath = chromePath;
+              this.logger.log(`Using system Chrome at: ${chromePath}`);
+              break;
+            }
+          }
+        }
+
+        try {
+          browser = await puppeteer.launch(launchOptions);
+        } catch (launchError: unknown) {
+          // Fallback: try with old headless mode if new mode fails
+          const errorMessage =
+            launchError instanceof Error ? launchError.message : String(launchError);
+          if (errorMessage?.includes('Failed to launch')) {
+            this.logger.warn('New headless mode failed, trying old headless mode');
+            const fallbackOptions: any = { ...launchOptions, headless: true };
+            delete fallbackOptions.executablePath; // Try with bundled Chromium
+            browser = await puppeteer.launch(fallbackOptions);
+          } else {
+            throw launchError;
+          }
+        }
+
+        const page = await browser.newPage();
+
+        // Set viewport for consistent rendering
+        await page.setViewport({
+          width: 1200,
+          height: 1600,
+          deviceScaleFactor: 1,
+        });
+
+        // Set content with timeout and fallback wait strategy
+        try {
+          await page.setContent(finalHtml, {
+            waitUntil: 'networkidle0',
+            timeout: 30000, // 30 second timeout
+          });
+        } catch (timeoutError) {
+          // Fallback to domcontentloaded if networkidle0 times out
+          this.logger.warn('networkidle0 timeout, falling back to domcontentloaded');
+          await page.setContent(finalHtml, {
+            waitUntil: 'domcontentloaded',
+            timeout: 30000,
+          });
+          // Wait a bit for any dynamic content
+          await page.waitForTimeout(2000);
+        }
+
+        // Generate PDF with timeout
+        await page.pdf({
+          path: filePath,
+          format: 'A4',
+          printBackground: true,
+          margin: {
+            top: '20mm',
+            right: '15mm',
+            bottom: '20mm',
+            left: '15mm',
+          },
+          timeout: 30000, // 30 second timeout for PDF generation
+        });
+
+        this.logger.log(`PDF generated: ${filePath}`);
+      } finally {
+        // Ensure browser is always closed
+        if (browser) {
+          try {
+            await browser.close();
+          } catch (closeError) {
+            this.logger.warn(`Error closing browser: ${closeError.message}`);
+          }
+        }
+      }
 
       // Return relative path or URL
       return `/api/reports/pdf/${fileName}`;

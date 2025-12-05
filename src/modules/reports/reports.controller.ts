@@ -8,6 +8,7 @@ import {
   NotFoundException,
   Body,
   ForbiddenException,
+  Query,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -39,6 +40,39 @@ export class ReportsController {
   @Roles(UserRole.TEACHER, UserRole.ADMIN)
   async getPendingReports(@CurrentUser() user: IJwtPayload) {
     return this.reportsService.getPendingReports(user.sub);
+  }
+
+  /**
+   * Get all reports for admin (with optional filters)
+   * GET /api/reports/admin/all
+   * Query params: status, testType, teacherId
+   */
+  @Get('admin/all')
+  @Roles(UserRole.ADMIN)
+  async getAllReports(
+    @Query('status') status?: string,
+    @Query('testType') testType?: string,
+    @Query('teacherId') teacherId?: string,
+  ) {
+    const filters: {
+      status?: ReportStatus;
+      testType?: TestType;
+      teacherId?: string;
+    } = {};
+
+    if (status) {
+      filters.status = status as ReportStatus;
+    }
+
+    if (testType) {
+      filters.testType = testType as TestType;
+    }
+
+    if (teacherId) {
+      filters.teacherId = teacherId;
+    }
+
+    return this.reportsService.getAllReports(filters);
   }
 
   /**

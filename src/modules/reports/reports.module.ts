@@ -10,13 +10,9 @@ import { User } from '../../database/entities/user.entity';
 import { GradingModule } from '../grading/grading.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([StudentSubmission, ReportCard, Test, User]),
-    GradingModule,
-  ],
+  imports: [TypeOrmModule.forFeature([StudentSubmission, ReportCard, Test, User]), GradingModule],
   controllers: [ReportsController],
   providers: [ReportsService, PdfGeneratorService],
   exports: [ReportsService],
 })
 export class ReportsModule {}
-
