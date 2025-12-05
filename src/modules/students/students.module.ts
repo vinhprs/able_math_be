@@ -4,11 +4,13 @@ import { StudentsService } from './students.service';
 import { StudentProfileController } from './students.controller';
 import { User } from '../../database/entities/user.entity';
 import { StudentSubmission } from '../../database/entities/student-submission.entity';
+import { StudentAssignment } from '../../database/entities/student-assignment.entity';
+import { Test } from '../../database/entities/test.entity';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, StudentSubmission]),
+    TypeOrmModule.forFeature([User, StudentSubmission, StudentAssignment, Test]),
     ConfigModule,
   ],
   controllers: [StudentProfileController],
@@ -16,4 +18,3 @@ import { ConfigModule } from '@nestjs/config';
   exports: [StudentsService],
 })
 export class StudentsModule {}
-

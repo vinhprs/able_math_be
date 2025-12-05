@@ -1,0 +1,195 @@
+{
+  "code": "E5-2",
+  "name": "A-DTM E5-2",
+  "grade": "Elementary 5",
+  "semester": "2",
+  "order": 2,
+  "pdfFile": "E5-2.pdf",
+  "isActive": true,
+  "sections": [
+    {
+      "number": 1,
+      "name": "Computational Ability",
+      "nameKorean": "계산능 lực",
+      "questionCount": 30,
+      "maxScore": 100,
+      "hasSpecialInputs": true,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 2, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 3, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 4, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 5, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 6, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 7, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 8, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 9, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 10, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 11, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 12, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 13, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 14, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 15, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 16, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 17, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 18, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 19, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 20, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 21, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 22, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 23, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 24, "maxScore": 3, "difficulty": 1 },
+        { "questionNumber": 25, "maxScore": 3, "difficulty": 1 },
+        { "questionNumber": 26, "maxScore": 4, "difficulty": 2 },
+        { "questionNumber": 27, "maxScore": 6, "difficulty": 2 },
+        { "questionNumber": 28, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 29, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 30, "maxScore": 5, "difficulty": 2 }
+      ]
+    },
+    {
+      "number": 2,
+      "name": "Conceptual Understanding Ability",
+      "nameKorean": "개념이해능 lực",
+      "questionCount": 10,
+      "maxScore": 82,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "Multiplication of fractions",
+          "nameEnglish": "분수의 곱셈",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 1, "maxScore": 7, "difficulty": 3 },
+            { "questionNumber": 6, "maxScore": 7, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Multiplication of decimals",
+          "nameEnglish": "소수의 곱셈",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 2, "maxScore": 8, "difficulty": 2 }]
+        },
+        {
+          "name": "Congruence and symmetry",
+          "nameEnglish": "합동과 대칭",
+          "questionCount": 4,
+          "questions": [
+            { "questionNumber": 3, "maxScore": 9, "difficulty": 3 },
+            { "questionNumber": 4, "maxScore": 10, "difficulty": 3 },
+            { "questionNumber": 9, "maxScore": 10, "difficulty": 3 },
+            { "questionNumber": 10, "maxScore": 7, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Rectangular solid",
+          "nameEnglish": "직육면체",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 5, "maxScore": 10, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Range and estimation of numbers",
+          "nameEnglish": "범위와 어림하기",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 7, "maxScore": 7, "difficulty": 2 }]
+        },
+        {
+          "name": "Average and probability",
+          "nameEnglish": "평균과 가능성",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 8, "maxScore": 7, "difficulty": 2 }]
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "name": "Concept Application Ability",
+      "nameKorean": "개념응용능 lực",
+      "questionCount": 15,
+      "maxScore": 75,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "Multiplication of fractions",
+          "nameEnglish": "분수의 곱셈",
+          "questionCount": 3,
+          "questions": [
+            { "questionNumber": 1, "maxScore": 5, "difficulty": 3 },
+            { "questionNumber": 6, "maxScore": 4, "difficulty": 2 },
+            { "questionNumber": 14, "maxScore": 6, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Multiplication of decimals",
+          "nameEnglish": "소수의 곱셈",
+          "questionCount": 3,
+          "questions": [
+            { "questionNumber": 2, "maxScore": 4, "difficulty": 2 },
+            { "questionNumber": 3, "maxScore": 5, "difficulty": 3 },
+            { "questionNumber": 8, "maxScore": 4, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Congruence and symmetry",
+          "nameEnglish": "합동과 대칭",
+          "questionCount": 5,
+          "questions": [
+            { "questionNumber": 4, "maxScore": 4, "difficulty": 2 },
+            { "questionNumber": 5, "maxScore": 4, "difficulty": 2 },
+            { "questionNumber": 7, "maxScore": 5, "difficulty": 3 },
+            { "questionNumber": 10, "maxScore": 6, "difficulty": 4 },
+            { "questionNumber": 13, "maxScore": 5, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Rectangular solid",
+          "nameEnglish": "직육면체",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 9, "maxScore": 5, "difficulty": 3 },
+            { "questionNumber": 15, "maxScore": 6, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Average and probability",
+          "nameEnglish": "평균과 가능성",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 11, "maxScore": 6, "difficulty": 4 },
+            { "questionNumber": 12, "maxScore": 6, "difficulty": 4 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "name": "Reasoning Ability",
+      "nameKorean": "추론능 lực",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    },
+    {
+      "number": 5,
+      "name": "Problem Solving Skills",
+      "nameKorean": "문제해 quyết năng lực",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,193 @@
+{
+  "code": "H-L",
+  "name": "A-DTM High School (Lower)",
+  "grade": "High School (Lower)",
+  "semester": "All",
+  "order": 100,
+  "pdfFile": "High School (Lower).pdf",
+  "isActive": true,
+  "sections": [
+    {
+      "number": 1,
+      "name": "Computational Ability",
+      "nameKorean": "계산능력",
+      "questionCount": 20,
+      "maxScore": 100,
+      "hasSpecialInputs": true,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 2, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 3, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 4, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 5, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 6, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 7, "maxScore": 5, "difficulty": 3 },
+        { "questionNumber": 8, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 9, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 10, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 11, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 12, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 13, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 14, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 15, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 16, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 17, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 18, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 19, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 20, "maxScore": 5, "difficulty": 2 }
+      ]
+    },
+    {
+      "number": 2,
+      "name": "Conceptual Understanding Ability",
+      "nameKorean": "개념이해능력",
+      "questionCount": 10,
+      "maxScore": 100,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "Set",
+          "nameEnglish": "집합",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 1, "maxScore": 4, "difficulty": 1 },
+            { "questionNumber": 2, "maxScore": 7, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Proposition",
+          "nameEnglish": "명제",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 3, "maxScore": 7, "difficulty": 2 },
+            { "questionNumber": 5, "maxScore": 8, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Function",
+          "nameEnglish": "함수",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 4, "maxScore": 8, "difficulty": 2 },
+            { "questionNumber": 6, "maxScore": 8, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Function of presence or absence",
+          "nameEnglish": "유리함수와 무리함수",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 7, "maxScore": 15, "difficulty": 3 },
+            { "questionNumber": 8, "maxScore": 12, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Permutation",
+          "nameEnglish": "순열",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 9, "maxScore": 16, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Combination",
+          "nameEnglish": "조합",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 10, "maxScore": 15, "difficulty": 3 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "name": "Concept Application Ability",
+      "nameKorean": "개념응용능력",
+      "questionCount": 10,
+      "maxScore": 100,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "Set",
+          "nameEnglish": "집합",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 1, "maxScore": 6, "difficulty": 1 },
+            { "questionNumber": 2, "maxScore": 6, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Proposition",
+          "nameEnglish": "명제",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 3, "maxScore": 8, "difficulty": 2 },
+            { "questionNumber": 4, "maxScore": 8, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Function",
+          "nameEnglish": "함수",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 5, "maxScore": 10, "difficulty": 2 },
+            { "questionNumber": 8, "maxScore": 14, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Function of presence or absence",
+          "nameEnglish": "유리함수와 무리함수",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 6, "maxScore": 11, "difficulty": 3 },
+            { "questionNumber": 7, "maxScore": 17, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Permutation",
+          "nameEnglish": "순열",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 9, "maxScore": 10, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Combination",
+          "nameEnglish": "조합",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 10, "maxScore": 10, "difficulty": 3 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "name": "Reasoning Ability",
+      "nameKorean": "추론능력",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    },
+    {
+      "number": 5,
+      "name": "Problem Solving Skills",
+      "nameKorean": "문제해결능력",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    }
+  ]
+}

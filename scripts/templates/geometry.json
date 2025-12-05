@@ -1,0 +1,172 @@
+{
+  "code": "H-G",
+  "name": "A-DTM Geometry",
+  "grade": "High School (Upper)",
+  "semester": "All",
+  "order": 100,
+  "pdfFile": "geometry.pdf",
+  "isActive": true,
+  "sections": [
+    {
+      "number": 1,
+      "name": "Computational Ability",
+      "nameKorean": "계산능력",
+      "questionCount": 15,
+      "maxScore": 100,
+      "hasSpecialInputs": true,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 7, "difficulty": 1 },
+        { "questionNumber": 2, "maxScore": 6, "difficulty": 1 },
+        { "questionNumber": 3, "maxScore": 6, "difficulty": 2 },
+        { "questionNumber": 4, "maxScore": 7, "difficulty": 2 },
+        { "questionNumber": 5, "maxScore": 7, "difficulty": 2 },
+        { "questionNumber": 6, "maxScore": 7, "difficulty": 1 },
+        { "questionNumber": 7, "maxScore": 7, "difficulty": 2 },
+        { "questionNumber": 8, "maxScore": 7, "difficulty": 1 },
+        { "questionNumber": 9, "maxScore": 7, "difficulty": 2 },
+        { "questionNumber": 10, "maxScore": 7, "difficulty": 2 },
+        { "questionNumber": 11, "maxScore": 7, "difficulty": 2 },
+        { "questionNumber": 12, "maxScore": 7, "difficulty": 3 },
+        { "questionNumber": 13, "maxScore": 6, "difficulty": 3 },
+        { "questionNumber": 14, "maxScore": 6, "difficulty": 3 },
+        { "questionNumber": 15, "maxScore": 6, "difficulty": 2 }
+      ]
+    },
+    {
+      "number": 2,
+      "name": "Conceptual Understanding Ability",
+      "nameKorean": "개념이해능력",
+      "questionCount": 7,
+      "maxScore": 100,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "Quadratic curve",
+          "nameEnglish": "이차곡선",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 1, "maxScore": 14, "difficulty": 1 }
+          ]
+        },
+        {
+          "name": "Quadratic curves and straight lines",
+          "nameEnglish": "이차곡선과 직선",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 2, "maxScore": 14, "difficulty": 1 }
+          ]
+        },
+        {
+          "name": "Components and inner products of plane vectors",
+          "nameEnglish": "평면벡터의 성분과 내적",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 3, "maxScore": 14, "difficulty": 3 },
+            { "questionNumber": 4, "maxScore": 14, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Spatial figures",
+          "nameEnglish": "공간 도형",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 5, "maxScore": 14, "difficulty": 3 },
+            { "questionNumber": 7, "maxScore": 16, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Spatial coordinates",
+          "nameEnglish": "공간 좌표",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 6, "maxScore": 14, "difficulty": 2 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "name": "Concept Application Ability",
+      "nameKorean": "개념응용능력",
+      "questionCount": 10,
+      "maxScore": 100,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "Quadratic curve",
+          "nameEnglish": "이차곡선",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 1, "maxScore": 8, "difficulty": 2 }]
+        },
+        {
+          "name": "Quadratic curves and straight lines",
+          "nameEnglish": "이차곡선과 직선",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 2, "maxScore": 8, "difficulty": 2 }]
+        },
+        {
+          "name": "Vector operations",
+          "nameEnglish": "벡터의 연산",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 3, "maxScore": 8, "difficulty": 2 }]
+        },
+        {
+          "name": "Components and inner products of plane vectors",
+          "nameEnglish": "평면벡터의 성분과 내적",
+          "questionCount": 3,
+          "questions": [
+            { "questionNumber": 4, "maxScore": 10, "difficulty": 2 },
+            { "questionNumber": 5, "maxScore": 8, "difficulty": 3 },
+            { "questionNumber": 6, "maxScore": 12, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Spatial figures",
+          "nameEnglish": "공간 도형",
+          "questionCount": 3,
+          "questions": [
+            { "questionNumber": 7, "maxScore": 12, "difficulty": 3 },
+            { "questionNumber": 8, "maxScore": 14, "difficulty": 3 },
+            { "questionNumber": 9, "maxScore": 8, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Spatial coordinates",
+          "nameEnglish": "공간 좌표",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 10, "maxScore": 12, "difficulty": 3 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "name": "Reasoning Ability",
+      "nameKorean": "추론능력",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    },
+    {
+      "number": 5,
+      "name": "Problem Solving Skills",
+      "nameKorean": "문제해결능력",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    }
+  ]
+}

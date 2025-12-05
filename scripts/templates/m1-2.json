@@ -1,0 +1,221 @@
+{
+  "code": "M1-2",
+  "name": "A-DTM M1-2",
+  "grade": "Middle School 1",
+  "semester": "2",
+  "order": 2,
+  "pdfFile": "M1-2.pdf",
+  "isActive": true,
+  "sections": [
+    {
+      "number": 1,
+      "name": "Computational Ability",
+      "nameKorean": "계산능력",
+      "questionCount": 30,
+      "maxScore": 101,
+      "hasSpecialInputs": true,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 2, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 3, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 4, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 5, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 6, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 7, "maxScore": 3, "difficulty": 3 },
+        { "questionNumber": 8, "maxScore": 3, "difficulty": 1 },
+        { "questionNumber": 9, "maxScore": 3, "difficulty": 1 },
+        { "questionNumber": 10, "maxScore": 3, "difficulty": 1 },
+        { "questionNumber": 11, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 12, "maxScore": 3, "difficulty": 3 },
+        { "questionNumber": 13, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 14, "maxScore": 4, "difficulty": 2 },
+        { "questionNumber": 15, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 16, "maxScore": 3, "difficulty": 1 },
+        { "questionNumber": 17, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 18, "maxScore": 3, "difficulty": 1 },
+        { "questionNumber": 19, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 20, "maxScore": 4, "difficulty": 2 },
+        { "questionNumber": 21, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 22, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 23, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 24, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 25, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 26, "maxScore": 3, "difficulty": 1 },
+        { "questionNumber": 27, "maxScore": 5, "difficulty": 3 },
+        { "questionNumber": 28, "maxScore": 4, "difficulty": 1 },
+        { "questionNumber": 29, "maxScore": 4, "difficulty": 1 },
+        { "questionNumber": 30, "maxScore": 5, "difficulty": 3 }
+      ]
+    },
+    {
+      "number": 2,
+      "name": "Conceptual Understanding Ability",
+      "nameKorean": "개념이해능력",
+      "questionCount": 10,
+      "maxScore": 109,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "Positional relationship",
+          "nameEnglish": "위치 관계",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 1, "maxScore": 10, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Basic shapes",
+          "nameEnglish": "기본 도형",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 2, "maxScore": 12, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Construction and Congruence",
+          "nameEnglish": "작도와 합동",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 3, "maxScore": 9, "difficulty": 2 }]
+        },
+        {
+          "name": "Polygon",
+          "nameEnglish": "다각형",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 4, "maxScore": 16, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Circles and sectors",
+          "nameEnglish": "원과 부채꼴",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 5, "maxScore": 9, "difficulty": 3 }]
+        },
+        {
+          "name": "Polyhedrons and solids of revolution",
+          "nameEnglish": "다면체와 회전체",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 6, "maxScore": 15, "difficulty": 4 },
+            { "questionNumber": 7, "maxScore": 15, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Surface area and volume of three-dimensional figures",
+          "nameEnglish": "입체도형의 겉넓이와 부피",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 8, "maxScore": 12, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Data organization and interpretation",
+          "nameEnglish": "자료의 정리와 해석",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 9, "maxScore": 6, "difficulty": 1 },
+            { "questionNumber": 10, "maxScore": 5, "difficulty": 2 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "name": "Concept Application Ability",
+      "nameKorean": "개념응용능력",
+      "questionCount": 15,
+      "maxScore": 102,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "Basic shapes",
+          "nameEnglish": "기본 도형",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 1, "maxScore": 6, "difficulty": 3 }]
+        },
+        {
+          "name": "Positional relationship",
+          "nameEnglish": "위치 관계",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 2, "maxScore": 6, "difficulty": 2 },
+            { "questionNumber": 6, "maxScore": 6, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Construction and Congruence",
+          "nameEnglish": "작도와 합동",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 3, "maxScore": 8, "difficulty": 2 }]
+        },
+        {
+          "name": "Polygon",
+          "nameEnglish": "다각형",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 4, "maxScore": 6, "difficulty": 3 },
+            { "questionNumber": 5, "maxScore": 8, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Circles and sectors",
+          "nameEnglish": "원과 부채꼴",
+          "questionCount": 4,
+          "questions": [
+            { "questionNumber": 7, "maxScore": 4, "difficulty": 1 },
+            { "questionNumber": 8, "maxScore": 8, "difficulty": 3 },
+            { "questionNumber": 9, "maxScore": 8, "difficulty": 2 },
+            { "questionNumber": 11, "maxScore": 8, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Surface area and volume of three-dimensional figures",
+          "nameEnglish": "입체도형의 겉넓이와 부피",
+          "questionCount": 3,
+          "questions": [
+            { "questionNumber": 10, "maxScore": 8, "difficulty": 3 },
+            { "questionNumber": 12, "maxScore": 8, "difficulty": 4 },
+            { "questionNumber": 13, "maxScore": 8, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Data organization and interpretation",
+          "nameEnglish": "자료의 정리와 해석",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 14, "maxScore": 4, "difficulty": 3 },
+            { "questionNumber": 15, "maxScore": 6, "difficulty": 3 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "name": "Reasoning Ability",
+      "nameKorean": "추론능력",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    },
+    {
+      "number": 5,
+      "name": "Problem Solving Skills",
+      "nameKorean": "문제해결능력",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,175 @@
+{
+  "code": "H-M2",
+  "name": "A-DTM High School (Upper) - Math II",
+  "grade": "High School (Upper)",
+  "semester": "All",
+  "order": 100,
+  "pdfFile": "number 2.pdf",
+  "isActive": true,
+  "sections": [
+    {
+      "number": 1,
+      "name": "Computational Ability",
+      "nameKorean": "계산능력",
+      "questionCount": 20,
+      "maxScore": 100,
+      "hasSpecialInputs": true,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 2, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 3, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 4, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 5, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 6, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 7, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 8, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 9, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 10, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 11, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 12, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 13, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 14, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 15, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 16, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 17, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 18, "maxScore": 5, "difficulty": 3 },
+        { "questionNumber": 19, "maxScore": 5, "difficulty": 3 },
+        { "questionNumber": 20, "maxScore": 5, "difficulty": 4 }
+      ]
+    },
+    {
+      "number": 2,
+      "name": "Conceptual Understanding Ability",
+      "nameKorean": "개념이해능력",
+      "questionCount": 10,
+      "maxScore": 100,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "Limit of a function",
+          "nameEnglish": "함수의 극한",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 1, "maxScore": 4, "difficulty": 2 }]
+        },
+        {
+          "name": "Continuity of functions",
+          "nameEnglish": "함수의 연속",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 2, "maxScore": 6, "difficulty": 3 },
+            { "questionNumber": 3, "maxScore": 10, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Differential coefficients and derivatives",
+          "nameEnglish": "미분계수와 도함수",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 4, "maxScore": 8, "difficulty": 2 },
+            { "questionNumber": 5, "maxScore": 10, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Application of derivatives",
+          "nameEnglish": "도함수의 활용",
+          "questionCount": 3,
+          "questions": [
+            { "questionNumber": 6, "maxScore": 12, "difficulty": 3 },
+            { "questionNumber": 7, "maxScore": 12, "difficulty": 3 },
+            { "questionNumber": 9, "maxScore": 12, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Application of definite integrals",
+          "nameEnglish": "정적분의 활용",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 8, "maxScore": 8, "difficulty": 3 },
+            { "questionNumber": 10, "maxScore": 18, "difficulty": 4 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "name": "Concept Application Ability",
+      "nameKorean": "개념응용능력",
+      "questionCount": 10,
+      "maxScore": 100,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "Limit of a function",
+          "nameEnglish": "함수의 극한",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 1, "maxScore": 4, "difficulty": 2 }]
+        },
+        {
+          "name": "Continuity of functions",
+          "nameEnglish": "함수의 연속",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 2, "maxScore": 6, "difficulty": 2 },
+            { "questionNumber": 3, "maxScore": 10, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Differential coefficients and derivatives",
+          "nameEnglish": "미분계수와 도함수",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 4, "maxScore": 8, "difficulty": 3 },
+            { "questionNumber": 5, "maxScore": 10, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Application of derivatives",
+          "nameEnglish": "도함수의 활용",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 6, "maxScore": 12, "difficulty": 4 },
+            { "questionNumber": 7, "maxScore": 14, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Application of definite integrals",
+          "nameEnglish": "정적분의 활용",
+          "questionCount": 3,
+          "questions": [
+            { "questionNumber": 8, "maxScore": 8, "difficulty": 4 },
+            { "questionNumber": 9, "maxScore": 14, "difficulty": 4 },
+            { "questionNumber": 10, "maxScore": 14, "difficulty": 3 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "name": "Reasoning Ability",
+      "nameKorean": "추론능력",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    },
+    {
+      "number": 5,
+      "name": "Problem Solving Skills",
+      "nameKorean": "문제해결능력",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    }
+  ]
+}

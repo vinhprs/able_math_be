@@ -1,5 +1,4 @@
-import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
-import { DifficultyLevel } from '@shared/types/enum';
+import { IsInt, IsNotEmpty, IsOptional, IsString, Min, Max } from 'class-validator';
 
 export class CreateQuestionDto {
   @IsInt()
@@ -18,8 +17,10 @@ export class CreateQuestionDto {
   @Min(1)
   score: number;
 
-  @IsEnum(DifficultyLevel)
-  difficulty: DifficultyLevel;
+  @IsInt()
+  @Min(1)
+  @Max(4)
+  difficulty: number; // 1-4: 1=Easy, 2=Medium, 3=Hard, 4=Very Hard
 
   @IsOptional()
   @IsString()

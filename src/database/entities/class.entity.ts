@@ -58,4 +58,3 @@ export class Class {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

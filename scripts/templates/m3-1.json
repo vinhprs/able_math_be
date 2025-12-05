@@ -1,0 +1,236 @@
+{
+  "code": "M3-1",
+  "name": "A-DTM M3-1",
+  "grade": "Middle School 3",
+  "semester": "1",
+  "order": 1,
+  "pdfFile": "M3-1.pdf",
+  "isActive": true,
+  "sections": [
+    {
+      "number": 1,
+      "name": "Computational Ability",
+      "nameKorean": "계산능력",
+      "questionCount": 30,
+      "maxScore": 87,
+      "hasSpecialInputs": true,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 2, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 3, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 4, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 5, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 6, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 7, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 8, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 9, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 10, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 11, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 12, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 13, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 14, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 15, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 16, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 17, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 18, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 19, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 20, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 21, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 22, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 23, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 24, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 25, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 26, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 27, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 28, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 29, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 30, "maxScore": 4, "difficulty": 3 }
+      ]
+    },
+    {
+      "number": 2,
+      "name": "Conceptual Understanding Ability",
+      "nameKorean": "개념이해능력",
+      "questionCount": 10,
+      "maxScore": 100,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "Meaning and properties of square roots, irrational numbers and real numbers",
+          "nameEnglish": "제곱근의 뜻과 성질, 무리수와 실수",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 1, "maxScore": 7, "difficulty": 2 },
+            { "questionNumber": 2, "maxScore": 6, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Calculating expressions including radicals",
+          "nameEnglish": "근호를 포함한 식의 계산",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 3, "maxScore": 10, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Multiplication and factorization of polynomials",
+          "nameEnglish": "다항식의 곱셈과 인수분해",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 4, "maxScore": 12, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Application of the factorization formula",
+          "nameEnglish": "인수분해 공식의 활용",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 5, "maxScore": 8, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Solving quadratic equations",
+          "nameEnglish": "이차방정식의 풀이",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 6, "maxScore": 10, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Application of quadratic equations",
+          "nameEnglish": "이차방정식의 활용",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 7, "maxScore": 14, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Standard form of quadratic function graph",
+          "nameEnglish": "이차함수 그래프의 표준형",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 8, "maxScore": 16, "difficulty": 4 },
+            { "questionNumber": 9, "maxScore": 7, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "General form of quadratic function graph",
+          "nameEnglish": "이차함수 그래프의 일반형",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 10, "maxScore": 10, "difficulty": 3 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "name": "Concept Application Ability",
+      "nameKorean": "개념응용능력",
+      "questionCount": 15,
+      "maxScore": 100,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "Meaning and properties of square roots, irrational numbers and real numbers",
+          "nameEnglish": "제곱근의 뜻과 성질, 무리수와 실수",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 1, "maxScore": 5, "difficulty": 2 },
+            { "questionNumber": 2, "maxScore": 7, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Calculating expressions including radicals",
+          "nameEnglish": "근호를 포함한 식의 계산",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 3, "maxScore": 6, "difficulty": 3 },
+            { "questionNumber": 4, "maxScore": 5, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Multiplication and factorization of polynomials",
+          "nameEnglish": "다항식의 곱셈과 인수분해",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 5, "maxScore": 5, "difficulty": 2 },
+            { "questionNumber": 6, "maxScore": 5, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Application of the factorization formula",
+          "nameEnglish": "인수분해 공식의 활용",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 7, "maxScore": 8, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Solving quadratic equations",
+          "nameEnglish": "이차방정식의 풀이",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 8, "maxScore": 6, "difficulty": 2 },
+            { "questionNumber": 9, "maxScore": 6, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Application of quadratic equations",
+          "nameEnglish": "이차방정식의 활용",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 10, "maxScore": 9, "difficulty": 4 },
+            { "questionNumber": 11, "maxScore": 7, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Standard form of quadratic function graph",
+          "nameEnglish": "이차함수 그래프의 표준형",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 12, "maxScore": 6, "difficulty": 2 },
+            { "questionNumber": 13, "maxScore": 9, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "General form of quadratic function graph",
+          "nameEnglish": "이차함수 그래프의 일반형",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 14, "maxScore": 8, "difficulty": 4 },
+            { "questionNumber": 15, "maxScore": 8, "difficulty": 4 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "name": "Reasoning Ability",
+      "nameKorean": "추론능력",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    },
+    {
+      "number": 5,
+      "name": "Problem Solving Skills",
+      "nameKorean": "문제해결능력",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    }
+  ]
+}

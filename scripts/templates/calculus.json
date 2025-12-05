@@ -1,0 +1,207 @@
+{
+  "code": "H-C",
+  "name": "A-DTM Calculus",
+  "grade": "High School (Upper)",
+  "semester": "All",
+  "order": 100,
+  "pdfFile": "Calculus.pdf",
+  "isActive": true,
+  "sections": [
+    {
+      "number": 1,
+      "name": "Computational Ability",
+      "nameKorean": "계산능력",
+      "questionCount": 15,
+      "maxScore": 100,
+      "hasSpecialInputs": true,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 6, "difficulty": 1 },
+        { "questionNumber": 2, "maxScore": 6, "difficulty": 1 },
+        { "questionNumber": 3, "maxScore": 6, "difficulty": 2 },
+        { "questionNumber": 4, "maxScore": 7, "difficulty": 2 },
+        { "questionNumber": 5, "maxScore": 6, "difficulty": 1 },
+        { "questionNumber": 6, "maxScore": 6, "difficulty": 2 },
+        { "questionNumber": 7, "maxScore": 7, "difficulty": 1 },
+        { "questionNumber": 8, "maxScore": 7, "difficulty": 2 },
+        { "questionNumber": 9, "maxScore": 7, "difficulty": 2 },
+        { "questionNumber": 10, "maxScore": 7, "difficulty": 1 },
+        { "questionNumber": 11, "maxScore": 7, "difficulty": 1 },
+        { "questionNumber": 12, "maxScore": 7, "difficulty": 1 },
+        { "questionNumber": 13, "maxScore": 7, "difficulty": 1 },
+        { "questionNumber": 14, "maxScore": 7, "difficulty": 2 },
+        { "questionNumber": 15, "maxScore": 7, "difficulty": 2 }
+      ]
+    },
+    {
+      "number": 2,
+      "name": "Conceptual Understanding Ability",
+      "nameKorean": "개념이해능력",
+      "questionCount": 7,
+      "maxScore": 100,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "Limit of a sequence",
+          "nameEnglish": "수열의 극한",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 1, "maxScore": 10, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Water supply",
+          "nameEnglish": "급수",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 2, "maxScore": 10, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Exponential logarithm function differentiation",
+          "nameEnglish": "지수로그함수의 미분",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 3, "maxScore": 11, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Trigonometric differentiation",
+          "nameEnglish": "삼각함수의 미분",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 4, "maxScore": 15, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Interpretation of tangent equations and functions",
+          "nameEnglish": "접선 방정식과 함수 해석",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 5, "maxScore": 16, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Application of function graphs and differentiation",
+          "nameEnglish": "함수 그래프와 미분 활용",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 6, "maxScore": 19, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Definite integrals of various functions",
+          "nameEnglish": "여러 가지 함수의 정적분",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 7, "maxScore": 19, "difficulty": 3 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "name": "Concept Application Ability",
+      "nameKorean": "개념응용능력",
+      "questionCount": 10,
+      "maxScore": 100,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "Limit of a sequence",
+          "nameEnglish": "수열의 극한",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 1, "maxScore": 4, "difficulty": 1 },
+            { "questionNumber": 10, "maxScore": 16, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Water supply",
+          "nameEnglish": "급수",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 2, "maxScore": 4, "difficulty": 2 }]
+        },
+        {
+          "name": "Exponential logarithm function differentiation",
+          "nameEnglish": "지수로그함수의 미분",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 3, "maxScore": 8, "difficulty": 2 }]
+        },
+        {
+          "name": "Trigonometric differentiation",
+          "nameEnglish": "삼각함수의 미분",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 4, "maxScore": 8, "difficulty": 3 }]
+        },
+        {
+          "name": "Various differentiation methods",
+          "nameEnglish": "여러 가지 미분법",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 5, "maxScore": 12, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Interpretation of tangent equations and functions",
+          "nameEnglish": "접선 방정식과 함수 해석",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 6, "maxScore": 12, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Application of function graphs and differentiation",
+          "nameEnglish": "함수 그래프와 미분 활용",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 7, "maxScore": 14, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Indefinite integrals of various functions",
+          "nameEnglish": "여러 가지 함수의 부정적분",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 8, "maxScore": 10, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Definite integrals of various functions",
+          "nameEnglish": "여러 가지 함수의 정적분",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 9, "maxScore": 12, "difficulty": 3 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "name": "Reasoning Ability",
+      "nameKorean": "추론능력",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    },
+    {
+      "number": 5,
+      "name": "Problem Solving Skills",
+      "nameKorean": "문제해결능력",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    }
+  ]
+}

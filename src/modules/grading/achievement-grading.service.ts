@@ -9,7 +9,6 @@ import { SubmissionStatus, TestType } from '@shared/types/enum';
 import { GradingResult } from './interfaces/grading-result.interface';
 import { UnitScore } from './interfaces/unit-score.interface';
 import { DifficultyScore } from './interfaces/difficulty-score.interface';
-import { DifficultyLevel } from '@shared/types/enum';
 
 @Injectable()
 export class AchievementGradingService {
@@ -411,20 +410,39 @@ export class AchievementGradingService {
     questions: TestQuestion[],
     answers: StudentAnswer[],
   ): DifficultyScore[] {
-    // Group questions by difficulty
+    // Group questions by difficulty (1-4)
     const difficultyMap = new Map<
-      DifficultyLevel,
+      number,
       { questions: TestQuestion[]; answers: StudentAnswer[] }
     >();
 
     for (const question of questions) {
-      const difficulty = question.difficulty || DifficultyLevel.MEDIUM;
-
-      if (!difficultyMap.has(difficulty)) {
-        difficultyMap.set(difficulty, { questions: [], answers: [] });
+      // Convert difficulty to number if needed (backward compatibility)
+      let difficultyNum: number;
+      if (typeof question.difficulty === 'number') {
+        difficultyNum = question.difficulty;
+      } else if (typeof question.difficulty === 'string') {
+        // Map enum to number: LOW=1, MEDIUM=2, HIGH=3
+        const difficultyMapEnum: Record<string, number> = {
+          LOW: 1,
+          MEDIUM: 2,
+          HIGH: 3,
+        };
+        difficultyNum = difficultyMapEnum[question.difficulty] || 2;
+      } else {
+        difficultyNum = 2; // Default to 2 (Medium)
       }
 
-      const difficultyData = difficultyMap.get(difficulty)!;
+      // Ensure difficulty is in valid range (1-4)
+      if (difficultyNum < 1 || difficultyNum > 4) {
+        difficultyNum = 2; // Default to 2 if invalid
+      }
+
+      if (!difficultyMap.has(difficultyNum)) {
+        difficultyMap.set(difficultyNum, { questions: [], answers: [] });
+      }
+
+      const difficultyData = difficultyMap.get(difficultyNum)!;
       difficultyData.questions.push(question);
 
       const answer = answers.find((a) => a.questionId === question.id);
@@ -469,15 +487,7 @@ export class AchievementGradingService {
       });
     }
 
-    // Sort by difficulty level: HIGH, MEDIUM, LOW
-    const difficultyOrder = {
-      [DifficultyLevel.HIGH]: 0,
-      [DifficultyLevel.MEDIUM]: 1,
-      [DifficultyLevel.LOW]: 2,
-    };
-
-    return difficultyScores.sort(
-      (a, b) => difficultyOrder[a.difficulty] - difficultyOrder[b.difficulty],
-    );
+    // Sort by difficulty level: 4 (Very Hard), 3 (Hard), 2 (Medium), 1 (Easy)
+    return difficultyScores.sort((a, b) => b.difficulty - a.difficulty);
   }
 }

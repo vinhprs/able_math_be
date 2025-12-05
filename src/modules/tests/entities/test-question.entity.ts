@@ -9,7 +9,6 @@ import {
   Index,
   OneToMany,
 } from 'typeorm';
-import { DifficultyLevel } from '@shared/types/enum';
 import { Test } from './test.entity';
 import { SubmissionAnswer } from './submission-answer.entity';
 
@@ -45,11 +44,10 @@ export class TestQuestion {
   score: number;
 
   @Column({
-    type: 'enum',
-    enum: DifficultyLevel,
+    type: 'int',
     nullable: true,
   })
-  difficulty: DifficultyLevel;
+  difficulty: number; // 1-4: 1=Easy, 2=Medium, 3=Hard, 4=Very Hard
 
   @OneToMany(() => SubmissionAnswer, (answer) => answer.question)
   answers: SubmissionAnswer[];

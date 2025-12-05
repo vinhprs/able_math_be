@@ -60,4 +60,3 @@ export class StudentAnswer {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

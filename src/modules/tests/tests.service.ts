@@ -15,6 +15,7 @@ import { CreateTestDto } from './dto/create-test.dto';
 import { UpdateTestDto } from './dto/update-test.dto';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { TestQueryDto } from './dto/test-query.dto';
+import { AdtmTemplateQueryDto } from './dto/adtm-template-query.dto';
 import { TestType, TestStatus, SubmissionStatus } from '@shared/types/enum';
 import {
   TestWithQuestions,
@@ -573,7 +574,10 @@ export class TestsService {
       ...test,
       questionCount: test.questions.length,
       unitBreakdown: questionsByUnit,
-    } as TestDetailResponse & { questionCount: number; unitBreakdown: any[] };
+    } as TestDetailResponse & {
+      questionCount: number;
+      unitBreakdown: Array<{ unitName: string; questionCount: number; totalScore: number }>;
+    };
   }
 
   /**
@@ -642,5 +646,365 @@ export class TestsService {
     });
 
     return Object.values(units);
+  }
+
+  /**
+   * Find all A-DTM templates with filters
+   */
+  async findAllAdtmTemplates(query: AdtmTemplateQueryDto) {
+    const { page = 1, limit = 20, level, status, search } = query;
+    const skip = (page - 1) * limit;
+
+    const queryBuilder = this.testRepository.createQueryBuilder('test');
+
+    // Filter by test type (ADTM only)
+    queryBuilder.andWhere('test.testType = :testType', { testType: TestType.ADTM });
+
+    // Filter by level (Elementary, Middle School, High School)
+    if (level) {
+      if (level === 'Elementary') {
+        queryBuilder.andWhere("test.grade LIKE 'E%'");
+      } else if (level === 'Middle School') {
+        queryBuilder.andWhere("test.grade LIKE 'M%'");
+      } else if (level === 'High School') {
+        queryBuilder.andWhere("test.grade IN ('H1', 'H2', 'H3')");
+      }
+    }
+
+    // Filter by status (PUBLISHED = active, ARCHIVED = inactive)
+    if (status) {
+      queryBuilder.andWhere('test.status = :status', { status });
+    }
+
+    // Search by testCode or title
+    if (search) {
+      queryBuilder.andWhere('(test.testCode LIKE :search OR test.title LIKE :search)', {
+        search: `%${search}%`,
+      });
+    }
+
+    // Get total count
+    const total = await queryBuilder.getCount();
+
+    // Get paginated data with questions for counting
+    const tests = await queryBuilder
+      .leftJoinAndSelect('test.questions', 'questions')
+      .skip(skip)
+      .take(limit)
+      .orderBy('test.createdAt')
+      .getMany();
+
+    // Transform to template list format
+    const templates = tests.map((test) => {
+      const questions = test.questions || [];
+      const section1Questions = questions.filter((q) => q.sectionNumber === 1);
+      const section2Questions = questions.filter((q) => q.sectionNumber === 2);
+      const section3Questions = questions.filter((q) => q.sectionNumber === 3);
+
+      return {
+        id: test.id,
+        testCode: test.testCode,
+        title: test.title,
+        grade: test.grade,
+        semester: test.semester,
+        totalScore: test.totalScore,
+        questionCount: questions.length,
+        section1Count: section1Questions.length,
+        section2Count: section2Questions.length,
+        section3Count: section3Questions.length,
+        isActive: test.status === TestStatus.PUBLISHED,
+        createdAt: test.createdAt,
+      };
+    });
+
+    return {
+      templates,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  /**
+   * Find A-DTM template details with full structure
+   */
+  async findAdtmTemplateDetails(id: string) {
+    const test = await this.testRepository.findOne({
+      where: { id, testType: TestType.ADTM },
+      relations: ['questions', 'questions.unit'],
+      order: {
+        questions: {
+          questionNumber: 'ASC',
+        },
+      },
+    });
+
+    if (!test) {
+      throw new NotFoundException(`A-DTM template with ID ${id} not found`);
+    }
+
+    const questions = test.questions || [];
+
+    // Section 1: Computational Ability
+    const section1Questions = questions
+      .filter((q) => q.sectionNumber === 1)
+      .map((q) => ({
+        id: q.id,
+        questionNumber: q.questionNumber,
+        score: q.score,
+        difficulty: q.difficulty,
+      }));
+
+    // Section 2: Conceptual Understanding
+    const section2Questions = questions.filter((q) => q.sectionNumber === 2);
+    const section2Units = this.groupQuestionsBySection(section2Questions);
+
+    // Section 3: Concept Application
+    const section3Questions = questions.filter((q) => q.sectionNumber === 3);
+    const section3Units = this.groupQuestionsBySection(section3Questions);
+
+    // Sections 4 & 5: Fixed structure (4 questions each)
+    const section4Questions = questions
+      .filter((q) => q.sectionNumber === 4)
+      .map((q) => ({
+        id: q.id,
+        questionNumber: q.questionNumber,
+        score: q.score,
+        difficulty: q.difficulty,
+      }));
+
+    const section5Questions = questions
+      .filter((q) => q.sectionNumber === 5)
+      .map((q) => ({
+        id: q.id,
+        questionNumber: q.questionNumber,
+        score: q.score,
+        difficulty: q.difficulty,
+      }));
+
+    return {
+      template: {
+        id: test.id,
+        testCode: test.testCode,
+        title: test.title,
+        grade: test.grade,
+        semester: test.semester,
+        totalScore: test.totalScore,
+        isActive: test.status === TestStatus.PUBLISHED,
+        pdfFile: test.pdfFilename || '',
+        sections: [
+          {
+            number: 1,
+            name: 'Computational Ability',
+            questionCount: section1Questions.length,
+            maxScore: section1Questions.reduce((sum, q) => sum + q.score, 0),
+            hasSpecialInputs: true,
+            questions: section1Questions,
+          },
+          {
+            number: 2,
+            name: 'Conceptual Understanding Ability',
+            questionCount: section2Questions.length,
+            maxScore: section2Questions.reduce((sum, q) => sum + q.score, 0),
+            hasSpecialInputs: false,
+            units: section2Units,
+          },
+          {
+            number: 3,
+            name: 'Concept Application Ability',
+            questionCount: section3Questions.length,
+            maxScore: section3Questions.reduce((sum, q) => sum + q.score, 0),
+            hasSpecialInputs: false,
+            units: section3Units,
+          },
+          {
+            number: 4,
+            name: 'Reasoning Ability',
+            questionCount: section4Questions.length,
+            maxScore: section4Questions.reduce((sum, q) => sum + q.score, 0),
+            hasSpecialInputs: false,
+            questions: section4Questions,
+          },
+          {
+            number: 5,
+            name: 'Problem Solving Skills',
+            questionCount: section5Questions.length,
+            maxScore: section5Questions.reduce((sum, q) => sum + q.score, 0),
+            hasSpecialInputs: false,
+            questions: section5Questions,
+          },
+        ],
+      },
+    };
+  }
+
+  /**
+   * Update A-DTM template status (active/inactive)
+   */
+  async updateAdtmTemplateStatus(id: string, isActive: boolean) {
+    const test = await this.testRepository.findOne({
+      where: { id, testType: TestType.ADTM },
+    });
+
+    if (!test) {
+      throw new NotFoundException(`A-DTM template with ID ${id} not found`);
+    }
+
+    // PUBLISHED = active, ARCHIVED = inactive
+    test.status = isActive ? TestStatus.PUBLISHED : TestStatus.ARCHIVED;
+    await this.testRepository.save(test);
+
+    return {
+      id: test.id,
+      testCode: test.testCode,
+      isActive: test.status === TestStatus.PUBLISHED,
+      status: test.status,
+    };
+  }
+
+  /**
+   * Get A-DTM template statistics
+   */
+  async getAdtmTemplateStatistics(id: string) {
+    const test = await this.testRepository.findOne({
+      where: { id, testType: TestType.ADTM },
+    });
+
+    if (!test) {
+      throw new NotFoundException(`A-DTM template with ID ${id} not found`);
+    }
+
+    // Get all submissions for this test
+    const submissions = await this.submissionRepository.find({
+      where: { testId: id },
+      relations: ['adtmData'],
+    });
+
+    const totalSubmissions = submissions.length;
+    const completedSubmissions = submissions.filter(
+      (s) => s.status === SubmissionStatus.GRADED,
+    ).length;
+    const inProgressSubmissions = submissions.filter(
+      (s) => s.status === SubmissionStatus.IN_PROGRESS || s.status === SubmissionStatus.SUBMITTED,
+    ).length;
+
+    // Calculate average score
+    const gradedSubmissions = submissions.filter(
+      (s) => s.status === SubmissionStatus.GRADED && s.standardScore !== null,
+    );
+    const averageScore =
+      gradedSubmissions.length > 0
+        ? gradedSubmissions.reduce((sum, s) => sum + (s.standardScore || 0), 0) /
+          gradedSubmissions.length
+        : 0;
+
+    // Score distribution
+    const scoreRanges = [
+      { range: '0-20', min: 0, max: 20 },
+      { range: '21-40', min: 21, max: 40 },
+      { range: '41-60', min: 41, max: 60 },
+      { range: '61-80', min: 61, max: 80 },
+      { range: '81-100', min: 81, max: 100 },
+    ];
+
+    const scoreDistribution = scoreRanges.map((range) => {
+      const count = gradedSubmissions.filter(
+        (s) =>
+          s.standardScore !== null && s.standardScore >= range.min && s.standardScore <= range.max,
+      ).length;
+      return { range: range.range, count };
+    });
+
+    // Section averages (from adtmData)
+    const sectionAverages = [
+      { sectionNumber: 1, sectionName: 'Section 1', averageScore: 0 },
+      { sectionNumber: 2, sectionName: 'Section 2', averageScore: 0 },
+      { sectionNumber: 3, sectionName: 'Section 3', averageScore: 0 },
+      { sectionNumber: 4, sectionName: 'Section 4', averageScore: 0 },
+      { sectionNumber: 5, sectionName: 'Section 5', averageScore: 0 },
+    ];
+
+    const submissionsWithAdtmData = submissions.filter((s) => s.adtmData);
+    if (submissionsWithAdtmData.length > 0) {
+      sectionAverages[0].averageScore =
+        submissionsWithAdtmData.reduce(
+          (sum, s) => sum + (s.adtmData?.section1StandardScore || 0),
+          0,
+        ) / submissionsWithAdtmData.length;
+      sectionAverages[1].averageScore =
+        submissionsWithAdtmData.reduce(
+          (sum, s) => sum + (s.adtmData?.section2StandardScore || 0),
+          0,
+        ) / submissionsWithAdtmData.length;
+      sectionAverages[2].averageScore =
+        submissionsWithAdtmData.reduce(
+          (sum, s) => sum + (s.adtmData?.section3StandardScore || 0),
+          0,
+        ) / submissionsWithAdtmData.length;
+      sectionAverages[3].averageScore =
+        submissionsWithAdtmData.reduce(
+          (sum, s) => sum + (s.adtmData?.section4StandardScore || 0),
+          0,
+        ) / submissionsWithAdtmData.length;
+      sectionAverages[4].averageScore =
+        submissionsWithAdtmData.reduce(
+          (sum, s) => sum + (s.adtmData?.section5StandardScore || 0),
+          0,
+        ) / submissionsWithAdtmData.length;
+    }
+
+    return {
+      totalSubmissions,
+      completedSubmissions,
+      inProgressSubmissions,
+      averageScore: Math.round(averageScore * 100) / 100,
+      scoreDistribution,
+      sectionAverages: sectionAverages.map((s) => ({
+        ...s,
+        averageScore: Math.round(s.averageScore * 100) / 100,
+      })),
+    };
+  }
+
+  /**
+   * Helper: Group questions by unit for a section
+   */
+  private groupQuestionsBySection(questions: TestQuestion[]) {
+    const unitsMap: Record<
+      string,
+      {
+        name: string;
+        questionCount: number;
+        maxScore: number;
+        questions: Array<{
+          id: string;
+          questionNumber: number;
+          score: number;
+          difficulty: number;
+        }>;
+      }
+    > = {};
+
+    questions.forEach((q) => {
+      const unitName = q.unitName || 'Unnamed Unit';
+      if (!unitsMap[unitName]) {
+        unitsMap[unitName] = {
+          name: unitName,
+          questionCount: 0,
+          maxScore: 0,
+          questions: [],
+        };
+      }
+      unitsMap[unitName].questionCount++;
+      unitsMap[unitName].maxScore += q.score;
+      unitsMap[unitName].questions.push({
+        id: q.id,
+        questionNumber: q.questionNumber,
+        score: q.score,
+        difficulty: q.difficulty || 2, // Default to 2 (Medium)
+      });
+    });
+
+    return Object.values(unitsMap);
   }
 }

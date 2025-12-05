@@ -9,7 +9,7 @@ import {
   Index,
   OneToMany,
 } from 'typeorm';
-import { DifficultyLevel, AnswerType } from '@shared/types/enum';
+import { AnswerType } from '@shared/types/enum';
 import { Test } from './test.entity';
 import { StudentAnswer } from './student-answer.entity';
 import { Unit } from './unit.entity';
@@ -56,11 +56,10 @@ export class TestQuestion {
   score: number;
 
   @Column({
-    type: 'enum',
-    enum: DifficultyLevel,
+    type: 'int',
     nullable: true,
   })
-  difficulty: DifficultyLevel;
+  difficulty: number; // 1-4: 1=Easy, 2=Medium, 3=Hard, 4=Very Hard
 
   // Relations
   @ManyToOne(() => Test, (test) => test.questions, { onDelete: 'CASCADE' })
@@ -80,4 +79,3 @@ export class TestQuestion {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 }
-

@@ -60,6 +60,16 @@ export interface AchievementReportData {
 }
 
 /**
+ * Difficulty Breakdown Data
+ */
+export interface DifficultyBreakdown {
+  difficulty: 1 | 2 | 3 | 4;
+  fullMarks: number; // Tổng điểm tối đa của các câu có difficulty này
+  rawScore: number; // Tổng điểm đạt được
+  standardScore: number; // (rawScore / fullMarks) × 100
+}
+
+/**
  * A-DTM Section Data
  */
 export interface AdtmSectionData {
@@ -77,6 +87,7 @@ export interface AdtmSectionData {
     maxScore: number;
     standardScore: number;
   }>;
+  difficultyBreakdown?: DifficultyBreakdown[]; // NEW: Difficulty breakdown for sections 1-3
 }
 
 /**

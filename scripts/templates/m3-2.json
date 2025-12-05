@@ -1,0 +1,196 @@
+{
+  "code": "M3-2",
+  "name": "A-DTM M3-2",
+  "grade": "Middle School 3",
+  "semester": "2",
+  "order": 2,
+  "pdfFile": "M3-2.pdf",
+  "isActive": true,
+  "sections": [
+    {
+      "number": 1,
+      "name": "Computational Ability",
+      "nameKorean": "계산능 lực",
+      "questionCount": 30,
+      "maxScore": 101,
+      "hasSpecialInputs": true,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 2, "maxScore": 3, "difficulty": 1 },
+        { "questionNumber": 3, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 4, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 5, "maxScore": 4, "difficulty": 2 },
+        { "questionNumber": 6, "maxScore": 4, "difficulty": 2 },
+        { "questionNumber": 7, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 8, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 9, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 10, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 11, "maxScore": 3, "difficulty": 1 },
+        { "questionNumber": 12, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 13, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 14, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 15, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 16, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 17, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 18, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 19, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 20, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 21, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 22, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 23, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 24, "maxScore": 3, "difficulty": 1 },
+        { "questionNumber": 25, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 26, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 27, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 28, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 29, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 30, "maxScore": 4, "difficulty": 3 }
+      ]
+    },
+    {
+      "number": 2,
+      "name": "Conceptual Understanding Ability",
+      "nameKorean": "개념이해능력",
+      "questionCount": 10,
+      "maxScore": 100,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "1. Meaning of trigonometric ratio",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 1, "maxScore": 8, "difficulty": 1 },
+            { "questionNumber": 2, "maxScore": 10, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "2. Application of trigonometric ratios",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 3, "maxScore": 10, "difficulty": 3 },
+            { "questionNumber": 4, "maxScore": 12, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "4. Central angle and its properties",
+          "questionCount": 3,
+          "questions": [
+            { "questionNumber": 5, "maxScore": 8, "difficulty": 2 },
+            { "questionNumber": 6, "maxScore": 8, "difficulty": 1 },
+            { "questionNumber": 7, "maxScore": 10, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "3. Circles and lines",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 8, "maxScore": 14, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "5. Representative values and scatter plots",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 9, "maxScore": 10, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "6. Scatterplot and correlation",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 10, "maxScore": 10, "difficulty": 2 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "name": "Concept Application Ability",
+      "nameKorean": "개념응용능력",
+      "questionCount": 15,
+      "maxScore": 100,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "1. Meaning of trigonometric ratio",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 1, "maxScore": 5, "difficulty": 2 },
+            { "questionNumber": 2, "maxScore": 5, "difficulty": 1 }
+          ]
+        },
+        {
+          "name": "2. Application of trigonometric ratios",
+          "questionCount": 5,
+          "questions": [
+            { "questionNumber": 3, "maxScore": 8, "difficulty": 4 },
+            { "questionNumber": 4, "maxScore": 8, "difficulty": 4 },
+            { "questionNumber": 5, "maxScore": 5, "difficulty": 1 },
+            { "questionNumber": 6, "maxScore": 8, "difficulty": 4 },
+            { "questionNumber": 7, "maxScore": 5, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "4. Central angle and its properties",
+          "questionCount": 3,
+          "questions": [
+            { "questionNumber": 8, "maxScore": 7, "difficulty": 3 },
+            { "questionNumber": 9, "maxScore": 8, "difficulty": 4 },
+            { "questionNumber": 10, "maxScore": 6, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "3. Circles and lines",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 11, "maxScore": 6, "difficulty": 3 },
+            { "questionNumber": 12, "maxScore": 8, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "5. Representative values and scatter plots",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 13, "maxScore": 5, "difficulty": 1 },
+            { "questionNumber": 14, "maxScore": 8, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "6. Scatterplot and correlation",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 15, "maxScore": 8, "difficulty": 4 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "name": "Reasoning Ability",
+      "nameKorean": "추론능력",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    },
+    {
+      "number": 5,
+      "name": "Problem Solving Skills",
+      "nameKorean": "문제해결능력",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    }
+  ]
+}

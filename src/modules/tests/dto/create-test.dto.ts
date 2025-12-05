@@ -1,6 +1,15 @@
-import { IsEnum, IsInt, IsNotEmpty, IsString, Min, IsOptional, ValidateNested, IsArray } from 'class-validator';
+import { Term } from '@shared/types/enum';
 import { Type } from 'class-transformer';
-import { TestType, Term } from '@shared/types/enum';
+import {
+  IsArray,
+  IsEnum,
+  IsInt,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  Min,
+  ValidateNested,
+} from 'class-validator';
 import { CreateQuestionDto } from './create-question.dto';
 
 export class CreateTestDto {
@@ -33,4 +42,3 @@ export class CreateTestDto {
   @Type(() => CreateQuestionDto)
   questions?: CreateQuestionDto[];
 }
-

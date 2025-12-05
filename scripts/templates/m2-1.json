@@ -1,0 +1,220 @@
+{
+  "code": "M2-1",
+  "name": "A-DTM M2-1",
+  "grade": "Middle School 2",
+  "semester": "1",
+  "order": 1,
+  "pdfFile": "M2-1.pdf",
+  "isActive": true,
+  "sections": [
+    {
+      "number": 1,
+      "name": "Computational Ability",
+      "nameKorean": "계산능력",
+      "questionCount": 30,
+      "maxScore": 79,
+      "hasSpecialInputs": true,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 2, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 3, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 4, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 5, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 6, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 7, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 8, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 9, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 10, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 11, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 12, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 13, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 14, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 15, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 16, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 17, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 18, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 19, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 20, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 21, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 22, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 23, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 24, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 25, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 26, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 27, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 28, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 29, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 30, "maxScore": 3, "difficulty": 2 }
+      ]
+    },
+    {
+      "number": 2,
+      "name": "Conceptual Understanding Ability",
+      "nameKorean": "개념이해능력",
+      "questionCount": 10,
+      "maxScore": 90,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "Rational numbers and recurring decimals",
+          "nameEnglish": "유리수와 순환소수",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 1, "maxScore": 8, "difficulty": 2 },
+            { "questionNumber": 2, "maxScore": 6, "difficulty": 1 }
+          ]
+        },
+        {
+          "name": "Calculation of the formula",
+          "nameEnglish": "식의 계산",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 3, "maxScore": 11, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Relationship between linear functions and linear equations",
+          "nameEnglish": "일차함수와 일차방정식의 관계",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 4, "maxScore": 10, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Simultaneous linear equations",
+          "nameEnglish": "연립일차방정식",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 5, "maxScore": 8, "difficulty": 2 },
+            { "questionNumber": 6, "maxScore": 10, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "First-order inequality",
+          "nameEnglish": "일차부등식",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 7, "maxScore": 8, "difficulty": 2 },
+            { "questionNumber": 8, "maxScore": 9, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Linear functions and graphs",
+          "nameEnglish": "일차함수와 그래프",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 9, "maxScore": 8, "difficulty": 2 },
+            { "questionNumber": 10, "maxScore": 12, "difficulty": 4 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "name": "Concept Application Ability",
+      "nameKorean": "개념응용능력",
+      "questionCount": 15,
+      "maxScore": 116,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "Rational numbers and recurring decimals",
+          "nameEnglish": "유리수와 순환소수",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 1, "maxScore": 6, "difficulty": 1 },
+            { "questionNumber": 2, "maxScore": 6, "difficulty": 1 }
+          ]
+        },
+        {
+          "name": "Calculation of the formula",
+          "nameEnglish": "식의 계산",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 3, "maxScore": 8, "difficulty": 3 },
+            { "questionNumber": 4, "maxScore": 6, "difficulty": 1 }
+          ]
+        },
+        {
+          "name": "Application of linear inequalities",
+          "nameEnglish": "일차부등식의 활용",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 5, "maxScore": 8, "difficulty": 3 },
+            { "questionNumber": 6, "maxScore": 8, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Simultaneous linear equations",
+          "nameEnglish": "연립일차방정식",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 7, "maxScore": 7, "difficulty": 2 },
+            { "questionNumber": 8, "maxScore": 8, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Application of simultaneous linear equations",
+          "nameEnglish": "연립일차방정식의 활용",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 9, "maxScore": 9, "difficulty": 3 }]
+        },
+        {
+          "name": "First-order inequality",
+          "nameEnglish": "일차부등식",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 10, "maxScore": 10, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Relationship between linear functions and linear equations",
+          "nameEnglish": "일차함수와 일차방정식의 관계",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 11, "maxScore": 10, "difficulty": 4 },
+            { "questionNumber": 13, "maxScore": 8, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Linear functions and graphs",
+          "nameEnglish": "일차함수와 그래프",
+          "questionCount": 3,
+          "questions": [
+            { "questionNumber": 12, "maxScore": 8, "difficulty": 3 },
+            { "questionNumber": 14, "maxScore": 6, "difficulty": 1 },
+            { "questionNumber": 15, "maxScore": 8, "difficulty": 3 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "name": "Reasoning Ability",
+      "nameKorean": "추론능력",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    },
+    {
+      "number": 5,
+      "name": "Problem Solving Skills",
+      "nameKorean": "문제해결능력",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    }
+  ]
+}

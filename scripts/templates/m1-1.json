@@ -1,0 +1,227 @@
+{
+  "code": "M1-1",
+  "name": "A-DTM M1-1",
+  "grade": "Middle School 1",
+  "semester": "1",
+  "order": 1,
+  "pdfFile": "M1-1.pdf",
+  "isActive": true,
+  "sections": [
+    {
+      "number": 1,
+      "name": "Computational Ability",
+      "nameKorean": "계산능력",
+      "questionCount": 30,
+      "maxScore": 100,
+      "hasSpecialInputs": true,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 2, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 3, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 4, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 5, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 6, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 7, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 8, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 9, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 10, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 11, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 12, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 13, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 14, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 15, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 16, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 17, "maxScore": 3, "difficulty": 1 },
+        { "questionNumber": 18, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 19, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 20, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 21, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 22, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 23, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 24, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 25, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 26, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 27, "maxScore": 4, "difficulty": 2 },
+        { "questionNumber": 28, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 29, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 30, "maxScore": 5, "difficulty": 2 }
+      ]
+    },
+    {
+      "number": 2,
+      "name": "Conceptual Understanding Ability",
+      "nameKorean": "개념이해능력",
+      "questionCount": 10,
+      "maxScore": 84,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "Factorization",
+          "nameEnglish": "소인수분해",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 1, "maxScore": 6, "difficulty": 1 },
+            { "questionNumber": 2, "maxScore": 6, "difficulty": 1 }
+          ]
+        },
+        {
+          "name": "Greatest common divisor and least common multiple",
+          "nameEnglish": "최대공약수와 최소공배수",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 3, "maxScore": 12, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Integers and rational numbers",
+          "nameEnglish": "정수와 유리수",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 4, "maxScore": 8, "difficulty": 1 },
+            { "questionNumber": 5, "maxScore": 6, "difficulty": 1 }
+          ]
+        },
+        {
+          "name": "Characters and Expressions",
+          "nameEnglish": "문자와 식",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 6, "maxScore": 9, "difficulty": 2 },
+            { "questionNumber": 7, "maxScore": 6, "difficulty": 1 }
+          ]
+        },
+        {
+          "name": "Solving linear equations",
+          "nameEnglish": "일차방정식의 풀이",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 8, "maxScore": 9, "difficulty": 2 }]
+        },
+        {
+          "name": "Coordinate plane and graph",
+          "nameEnglish": "좌표평면과 그래프",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 9, "maxScore": 10, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Direct and inverse proportions",
+          "nameEnglish": "정비례와 반비례",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 10, "maxScore": 12, "difficulty": 3 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "name": "Concept Application Ability",
+      "nameKorean": "개념응용능력",
+      "questionCount": 15,
+      "maxScore": 117,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "Factorization",
+          "nameEnglish": "소인수분해",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 1, "maxScore": 4, "difficulty": 1 },
+            { "questionNumber": 2, "maxScore": 10, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Greatest common divisor and least common multiple",
+          "nameEnglish": "최대공약수와 최소공배수",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+            { "questionNumber": 4, "maxScore": 8, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Integers and rational numbers",
+          "nameEnglish": "정수와 유리수",
+          "questionCount": 3,
+          "questions": [
+            { "questionNumber": 5, "maxScore": 6, "difficulty": 2 },
+            { "questionNumber": 6, "maxScore": 8, "difficulty": 3 },
+            { "questionNumber": 7, "maxScore": 9, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Characters and Expressions",
+          "nameEnglish": "문자와 식",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 8, "maxScore": 6, "difficulty": 1 },
+            { "questionNumber": 9, "maxScore": 8, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Solving linear equations",
+          "nameEnglish": "일차방정식의 풀이",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 10, "maxScore": 8, "difficulty": 2 },
+            { "questionNumber": 11, "maxScore": 8, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Application of linear equations",
+          "nameEnglish": "일차방정식의 활용",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 12, "maxScore": 6, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Coordinate plane and graph",
+          "nameEnglish": "좌표평면과 그래프",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 13, "maxScore": 8, "difficulty": 3 },
+            { "questionNumber": 14, "maxScore": 10, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Direct and inverse proportions",
+          "nameEnglish": "정비례와 반비례",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 15, "maxScore": 8, "difficulty": 3 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "name": "Reasoning Ability",
+      "nameKorean": "추론능력",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    },
+    {
+      "number": 5,
+      "name": "Problem Solving Skills",
+      "nameKorean": "문제해결능력",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    }
+  ]
+}

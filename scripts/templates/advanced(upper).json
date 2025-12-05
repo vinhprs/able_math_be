@@ -1,0 +1,195 @@
+{
+  "code": "A-U",
+  "name": "A-DTM Advanced (Upper)",
+  "grade": "Advanced (Upper)",
+  "semester": "All",
+  "order": 100,
+  "pdfFile": "Advanced (Upper).pdf",
+  "isActive": true,
+  "sections": [
+    {
+      "number": 1,
+      "name": "Computational Ability",
+      "nameKorean": "계산능력",
+      "questionCount": 20,
+      "maxScore": 100,
+      "hasSpecialInputs": true,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 2, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 3, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 4, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 5, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 6, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 7, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 8, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 9, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 10, "maxScore": 5, "difficulty": 3 },
+        { "questionNumber": 11, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 12, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 13, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 14, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 15, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 16, "maxScore": 5, "difficulty": 2 },
+        { "questionNumber": 17, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 18, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 19, "maxScore": 5, "difficulty": 1 },
+        { "questionNumber": 20, "maxScore": 5, "difficulty": 2 }
+      ]
+    },
+    {
+      "number": 2,
+      "name": "Conceptual Understanding Ability",
+      "nameKorean": "개념이해능력",
+      "questionCount": 10,
+      "maxScore": 100,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "Polynomial",
+          "nameEnglish": "다항식",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 2, "maxScore": 10, "difficulty": 2 },
+            { "questionNumber": 4, "maxScore": 13, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Complex numbers",
+          "nameEnglish": "복소수",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 1, "maxScore": 7, "difficulty": 1 }]
+        },
+        {
+          "name": "Quadratic equation",
+          "nameEnglish": "이차방정식",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 3, "maxScore": 8, "difficulty": 1 },
+            { "questionNumber": 5, "maxScore": 10, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Quadratic equations and quadratic functions",
+          "nameEnglish": "이차방정식과 이차함수",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 6, "maxScore": 10, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Various equations",
+          "nameEnglish": "여러 가지 방정식",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 7, "maxScore": 10, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "First-order inequality",
+          "nameEnglish": "일차부등식",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 8, "maxScore": 8, "difficulty": 1 }]
+        },
+        {
+          "name": "Various inequalities",
+          "nameEnglish": "여러 가지 부등식",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 9, "maxScore": 10, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Equation of a shape",
+          "nameEnglish": "도형의 방정식",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 10, "maxScore": 14, "difficulty": 3 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "name": "Concept Application Ability",
+      "nameKorean": "개념응용능력",
+      "questionCount": 10,
+      "maxScore": 100,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "Polynomial",
+          "nameEnglish": "다항식",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 1, "maxScore": 7, "difficulty": 2 }]
+        },
+        {
+          "name": "Quadratic equation",
+          "nameEnglish": "이차방정식",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 2, "maxScore": 7, "difficulty": 2 }]
+        },
+        {
+          "name": "Various equations",
+          "nameEnglish": "여러 가지 방정식",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 3, "maxScore": 8, "difficulty": 3 }]
+        },
+        {
+          "name": "Quadratic equations and quadratic functions",
+          "nameEnglish": "이차방정식과 이차함수",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 5, "maxScore": 8, "difficulty": 3 }]
+        },
+        {
+          "name": "Various inequalities",
+          "nameEnglish": "여러 가지 부등식",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 7, "maxScore": 12, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Equation of a shape",
+          "nameEnglish": "도형의 방정식",
+          "questionCount": 5,
+          "questions": [
+            { "questionNumber": 4, "maxScore": 8, "difficulty": 2 },
+            { "questionNumber": 6, "maxScore": 10, "difficulty": 2 },
+            { "questionNumber": 8, "maxScore": 14, "difficulty": 3 },
+            { "questionNumber": 9, "maxScore": 14, "difficulty": 4 },
+            { "questionNumber": 10, "maxScore": 12, "difficulty": 4 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "name": "Reasoning Ability",
+      "nameKorean": "추론능력",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    },
+    {
+      "number": 5,
+      "name": "Problem Solving Skills",
+      "nameKorean": "문제해결능력",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    }
+  ]
+}

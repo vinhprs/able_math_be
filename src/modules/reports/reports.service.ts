@@ -107,7 +107,12 @@ export class ReportsService {
       questionBreakdown: this.buildQuestionBreakdown(submission),
       charts: {
         unitBar: this.generateUnitBarChart(gradingResult.unitScores),
-        difficultyPie: this.generateDifficultyPieChart(gradingResult.difficultyScores),
+        difficultyPie: this.generateDifficultyPieChart(
+          gradingResult.difficultyScores.map((ds) => ({
+            difficulty: this.mapDifficultyToString(ds.difficulty),
+            standardScore: ds.standardScore,
+          })),
+        ),
       },
     };
 
@@ -125,10 +130,10 @@ export class ReportsService {
   async generateAdtmReport(submissionId: string): Promise<AdtmReportData> {
     this.logger.log(`Generating A-DTM report for submission ${submissionId}`);
 
-    // Get submission with all relations
+    // Get submission with all relations including questions and answers
     const submission = await this.submissionRepository.findOne({
       where: { id: submissionId },
-      relations: ['student', 'test', 'adtmData'],
+      relations: ['student', 'test', 'adtmData', 'answers', 'answers.question', 'test.questions'],
     });
 
     if (!submission) {
@@ -159,8 +164,8 @@ export class ReportsService {
       adtmData = reloaded.adtmData;
     }
 
-    // Build sections data
-    const sections = this.buildAdtmSections(adtmData);
+    // Build sections data with difficulty breakdown
+    const sections = await this.buildAdtmSections(adtmData, submission);
 
     // Generate recommendations
     const recommendations = this.generateRecommendations(adtmData, sections);
@@ -391,6 +396,19 @@ export class ReportsService {
   }
 
   /**
+   * Map difficulty number to string
+   */
+  private mapDifficultyToString(difficulty: number): string {
+    const difficultyMap: Record<number, string> = {
+      1: 'LOW',
+      2: 'MEDIUM',
+      3: 'HIGH',
+      4: 'VERY_HIGH',
+    };
+    return difficultyMap[difficulty] || 'MEDIUM';
+  }
+
+  /**
    * Build question breakdown for Achievement report
    */
   private buildQuestionBreakdown(submission: StudentSubmission) {
@@ -400,21 +418,103 @@ export class ReportsService {
 
     return submission.answers
       .filter((answer) => answer.question)
-      .map((answer) => ({
-        questionNumber: answer.question.questionNumber,
-        unitName: answer.question.unitName || 'Unknown',
-        difficulty: answer.question.difficulty || 'MEDIUM',
-        isCorrect: answer.isCorrect || false,
-        scoreEarned: answer.scoreEarned || 0,
-        maxScore: answer.question.score,
-      }))
+      .map((answer) => {
+        const difficultyNum = answer.question.difficulty || 2; // Default to 2 (Medium)
+        return {
+          questionNumber: answer.question.questionNumber,
+          unitName: answer.question.unitName || 'Unknown',
+          difficulty: this.mapDifficultyToString(difficultyNum),
+          isCorrect: answer.isCorrect || false,
+          scoreEarned: answer.scoreEarned || 0,
+          maxScore: answer.question.score,
+        };
+      })
       .sort((a, b) => a.questionNumber - b.questionNumber);
+  }
+
+  /**
+   * Calculate difficulty breakdown for a section
+   */
+  private calculateDifficultyBreakdown(
+    sectionNumber: number,
+    questions: any[],
+    answers: any[],
+  ): import('./interfaces/report-data.interface').DifficultyBreakdown[] {
+    // Group questions and answers by difficulty
+    const byDifficulty: Record<number, { questions: any[]; answers: any[] }> = {
+      1: { questions: [], answers: [] },
+      2: { questions: [], answers: [] },
+      3: { questions: [], answers: [] },
+      4: { questions: [], answers: [] },
+    };
+
+    // Filter questions for this section
+    const sectionQuestions = questions.filter((q) => q.sectionNumber === sectionNumber);
+
+    for (const question of sectionQuestions) {
+      // Handle difficulty: could be number (1-4) or enum (HIGH/MEDIUM/LOW)
+      let difficultyNum: number;
+      if (typeof question.difficulty === 'number') {
+        difficultyNum = question.difficulty;
+      } else if (typeof question.difficulty === 'string') {
+        // Map enum to number: LOW=1, MEDIUM=2, HIGH=3, (4 would need to be added)
+        const difficultyMap: Record<string, number> = {
+          LOW: 1,
+          MEDIUM: 2,
+          HIGH: 3,
+        };
+        difficultyNum = difficultyMap[question.difficulty] || 1;
+      } else {
+        difficultyNum = 1; // Default
+      }
+
+      if (difficultyNum >= 1 && difficultyNum <= 4) {
+        if (!byDifficulty[difficultyNum]) {
+          byDifficulty[difficultyNum] = { questions: [], answers: [] };
+        }
+        byDifficulty[difficultyNum].questions.push(question);
+
+        // Find corresponding answer
+        const answer = answers.find((a) => a.questionId === question.id);
+        if (answer) {
+          byDifficulty[difficultyNum].answers.push(answer);
+        }
+      }
+    }
+
+    // Calculate scores for each difficulty level
+    return [1, 2, 3, 4].map((difficulty) => {
+      const data = byDifficulty[difficulty];
+
+      if (!data || data.questions.length === 0) {
+        return {
+          difficulty: difficulty as 1 | 2 | 3 | 4,
+          fullMarks: 0,
+          rawScore: 0,
+          standardScore: 0,
+        };
+      }
+
+      const fullMarks = data.questions.reduce((sum, q) => sum + (q.score || 0), 0);
+      const rawScore = data.answers.reduce((sum, a) => sum + (a.scoreEarned || 0), 0);
+      const standardScore = fullMarks > 0 ? (rawScore / fullMarks) * 100 : 0;
+
+      return {
+        difficulty: difficulty as 1 | 2 | 3 | 4,
+        fullMarks,
+        rawScore,
+        standardScore: Math.round(standardScore * 10) / 10, // Round to 1 decimal
+      };
+    });
   }
 
   /**
    * Build A-DTM sections data
    */
-  private buildAdtmSections(adtmData: AdtmSubmission): AdtmReportData['sections'] {
+  private async buildAdtmSections(
+    adtmData: AdtmSubmission,
+    submission: StudentSubmission,
+  ): Promise<AdtmReportData['sections']> {
     const sectionNames = [
       'Calculation Ability',
       'Conceptual Understanding',
@@ -422,6 +522,13 @@ export class ReportsService {
       'Application',
       'Analysis',
     ];
+
+    // Get questions and answers for difficulty breakdown
+    const questions = submission.test?.questions || [];
+    const answers = submission.answers || [];
+
+    // Calculate difficulty breakdown for Section 1
+    const section1DifficultyBreakdown = this.calculateDifficultyBreakdown(1, questions, answers);
 
     const sections: AdtmReportData['sections'] = [
       {
@@ -433,6 +540,7 @@ export class ReportsService {
         correctCount: adtmData.section1CorrectCount,
         mistakeCount: adtmData.section1MistakeCount,
         unsolvedCount: adtmData.section1UnsolvedCount,
+        difficultyBreakdown: section1DifficultyBreakdown,
       },
     ];
 
@@ -474,6 +582,14 @@ export class ReportsService {
           }))
         : [];
 
+      // Calculate difficulty breakdown for sections 2 and 3 only
+      let difficultyBreakdown:
+        | import('./interfaces/report-data.interface').DifficultyBreakdown[]
+        | undefined;
+      if (data.number === 2 || data.number === 3) {
+        difficultyBreakdown = this.calculateDifficultyBreakdown(data.number, questions, answers);
+      }
+
       sections.push({
         number: data.number,
         name: sectionNames[data.number - 1],
@@ -481,6 +597,7 @@ export class ReportsService {
         rawScore: data.rawScore,
         maxScore: 15, // Sections 2-5 have 15 questions each
         unitScores,
+        difficultyBreakdown,
       });
     }
 

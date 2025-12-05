@@ -1,0 +1,206 @@
+{
+  "code": "E6-1",
+  "name": "A-DTM E6-1",
+  "grade": "Elementary 6",
+  "semester": "1",
+  "order": 1,
+  "pdfFile": "E6-1.pdf",
+  "isActive": true,
+  "sections": [
+    {
+      "number": 1,
+      "name": "Computational Ability",
+      "nameKorean": "계산능력",
+      "questionCount": 30,
+      "maxScore": 90,
+      "hasSpecialInputs": true,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 2, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 3, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 4, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 5, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 6, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 7, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 8, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 9, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 10, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 11, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 12, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 13, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 14, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 15, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 16, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 17, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 18, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 19, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 20, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 21, "maxScore": 4, "difficulty": 3 },
+        { "questionNumber": 22, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 23, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 24, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 25, "maxScore": 2, "difficulty": 1 },
+        { "questionNumber": 26, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 27, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 28, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 29, "maxScore": 3, "difficulty": 2 },
+        { "questionNumber": 30, "maxScore": 3, "difficulty": 2 }
+      ]
+    },
+    {
+      "number": 2,
+      "name": "Conceptual Understanding Ability",
+      "nameKorean": "개념이해능력",
+      "questionCount": 10,
+      "maxScore": 94,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "Pyramids and pyramids",
+          "nameEnglish": "각기둥과 각뿔",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 1, "maxScore": 8, "difficulty": 2 },
+            { "questionNumber": 2, "maxScore": 12, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Division of fractions",
+          "nameEnglish": "분수의 나눗셈",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 3, "maxScore": 8, "difficulty": 2 },
+            { "questionNumber": 4, "maxScore": 8, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Rain and ratio",
+          "nameEnglish": "비와 비율",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 5, "maxScore": 10, "difficulty": 3 },
+            { "questionNumber": 6, "maxScore": 10, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Various graphs",
+          "nameEnglish": "여러 가지 그래프",
+          "questionCount": 1,
+          "questions": [{ "questionNumber": 7, "maxScore": 8, "difficulty": 2 }]
+        },
+        {
+          "name": "Volume and surface area of a rectangular solid",
+          "nameEnglish": "직육면체의 부피와 겉넓이",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 8, "maxScore": 10, "difficulty": 3 },
+            { "questionNumber": 10, "maxScore": 10, "difficulty": 3 }
+          ]
+        },
+        {
+          "name": "Division of decimals",
+          "nameEnglish": "소수의 나눗셈",
+          "questionCount": 1,
+          "questions": [
+            { "questionNumber": 9, "maxScore": 10, "difficulty": 3 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "name": "Concept Application Ability",
+      "nameKorean": "개념응용능력",
+      "questionCount": 15,
+      "maxScore": 76,
+      "hasSpecialInputs": false,
+      "units": [
+        {
+          "name": "Pyramids and pyramids",
+          "nameEnglish": "각기둥과 각뿔",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 1, "maxScore": 5, "difficulty": 3 },
+            { "questionNumber": 2, "maxScore": 6, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Division of fractions",
+          "nameEnglish": "분수의 나눗셈",
+          "questionCount": 4,
+          "questions": [
+            { "questionNumber": 3, "maxScore": 3, "difficulty": 1 },
+            { "questionNumber": 4, "maxScore": 6, "difficulty": 4 },
+            { "questionNumber": 13, "maxScore": 6, "difficulty": 4 },
+            { "questionNumber": 14, "maxScore": 6, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Division of decimals",
+          "nameEnglish": "소수의 나눗셈",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 5, "maxScore": 6, "difficulty": 4 },
+            { "questionNumber": 6, "maxScore": 4, "difficulty": 2 }
+          ]
+        },
+        {
+          "name": "Rain and ratio",
+          "nameEnglish": "비와 비율",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 7, "maxScore": 5, "difficulty": 3 },
+            { "questionNumber": 8, "maxScore": 6, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Various graphs",
+          "nameEnglish": "여러 가지 그래프",
+          "questionCount": 2,
+          "questions": [
+            { "questionNumber": 9, "maxScore": 3, "difficulty": 1 },
+            { "questionNumber": 10, "maxScore": 6, "difficulty": 4 }
+          ]
+        },
+        {
+          "name": "Volume and surface area of a rectangular solid",
+          "nameEnglish": "직육면체의 부피와 겉넓이",
+          "questionCount": 3,
+          "questions": [
+            { "questionNumber": 11, "maxScore": 5, "difficulty": 3 },
+            { "questionNumber": 12, "maxScore": 5, "difficulty": 3 },
+            { "questionNumber": 15, "maxScore": 4, "difficulty": 2 }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "name": "Reasoning Ability",
+      "nameKorean": "추론능력",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    },
+    {
+      "number": 5,
+      "name": "Problem Solving Skills",
+      "nameKorean": "문제해결능력",
+      "questionCount": 4,
+      "maxScore": 40,
+      "hasSpecialInputs": false,
+      "questions": [
+        { "questionNumber": 1, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 2, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 3, "maxScore": 10, "difficulty": 4 },
+        { "questionNumber": 4, "maxScore": 10, "difficulty": 4 }
+      ]
+    }
+  ]
+}

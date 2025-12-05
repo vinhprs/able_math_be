@@ -20,4 +20,3 @@ export class UpdateStudentProfileDto {
   @Matches(/^[0-9+\-() ]+$/, { message: 'Invalid phone number format' })
   parentContact?: string;
 }
-
