@@ -20,7 +20,7 @@ async function bootstrap() {
   // CORS configuration
   const corsOrigin = configService.get<string>('app.corsOrigin', 'http://localhost:5173');
   app.enableCors({
-    origin: corsOrigin,
+    origin: ['http://localhost:5173', 'https://able.mathwing.com'],
     credentials: true,
   });
 
@@ -54,4 +54,3 @@ async function bootstrap() {
 }
 
 bootstrap();
-
