@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  app:
+    image: able-math-be-dev
+    container_name: able-math-be-dev
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    ports:
+      - "${PORT:-4002}:4002"
+    env_file:
+      - .env
+    networks:
+      - able-math-network
+
+networks:
+  able-math-network:
+    driver: bridge
