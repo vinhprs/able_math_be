@@ -65,6 +65,7 @@ export class PdfGeneratorService {
       let browser: puppeteer.Browser | null = null;
       try {
         const isMacOS = process.platform === 'darwin';
+        const isLinux = process.platform === 'linux';
         const launchOptions: any = {
           headless: 'new', // Use new headless mode
           args: [
@@ -87,7 +88,7 @@ export class PdfGeneratorService {
           timeout: 30000, // 30 second timeout for browser launch
         };
 
-        // Try to use system Chrome on macOS if available
+        // Try to use system Chrome/Chromium if available
         if (isMacOS) {
           const possibleChromePaths = [
             '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
@@ -100,6 +101,31 @@ export class PdfGeneratorService {
               this.logger.log(`Using system Chrome at: ${chromePath}`);
               break;
             }
+          }
+        } else if (isLinux) {
+          // Try to use system Chromium on Linux (Ubuntu/Debian/Alpine)
+          const possibleChromePaths = [
+            process.env.PUPPETEER_EXECUTABLE_PATH, // From environment variable
+            '/usr/bin/chromium-browser', // Ubuntu/Debian
+            '/usr/bin/chromium', // Alpine/other distros
+            '/usr/bin/google-chrome', // Google Chrome on Linux
+            '/usr/bin/google-chrome-stable', // Google Chrome stable
+          ];
+
+          for (const chromePath of possibleChromePaths) {
+            if (chromePath && existsSync(chromePath)) {
+              launchOptions.executablePath = chromePath;
+              this.logger.log(`Using system Chromium/Chrome at: ${chromePath}`);
+              break;
+            }
+          }
+
+          // If no system Chrome found, let Puppeteer use bundled Chrome
+          if (!launchOptions.executablePath) {
+            this.logger.warn(
+              'No system Chromium found, using Puppeteer bundled Chrome. ' +
+                'For better performance, install Chromium: apt-get install -y chromium-browser',
+            );
           }
         }
 
