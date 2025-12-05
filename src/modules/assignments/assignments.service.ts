@@ -19,7 +19,7 @@ import { BulkAssignDto } from './dto/bulk-assign.dto';
 import { AssignToClassDto } from './dto/assign-to-class.dto';
 import { AssignmentQueryDto } from './dto/assignment-query.dto';
 import { StudentAssignmentQueryDto } from './dto/student-assignment-query.dto';
-import { TestStatus, UserRole } from '@shared/types/enum';
+import { TestStatus, UserRole } from '../../../../frontend/src/shared/types/enum';
 
 @Injectable()
 export class AssignmentsService {

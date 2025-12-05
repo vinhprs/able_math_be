@@ -2,12 +2,12 @@ import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { dataSourceOptions } from '../../config/data-source';
 import { User } from '../entities/user.entity';
-import { UserRole } from '@shared/types/enum';
+import { UserRole } from '../../../../frontend/src/shared/types/enum';
 
 /**
  * Initial database seed
  * Creates default users for testing and development
- * 
+ *
  * Run with: npx ts-node src/database/seeds/initial-seed.ts
  */
 
@@ -86,7 +86,6 @@ async function seed() {
     console.log('   Email: student@ablemath.com');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
     console.log('⚠️  Remember to change these passwords in production!\n');
-
   } catch (error) {
     console.error('❌ Error during seeding:', error);
   } finally {
@@ -99,4 +98,3 @@ seed().catch((error) => {
   console.error('Fatal error:', error);
   process.exit(1);
 });
-

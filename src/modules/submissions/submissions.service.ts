@@ -18,7 +18,7 @@ import { TestQuestion } from '../../database/entities/test-question.entity';
 import { User } from '../../database/entities/user.entity';
 import { StartTestDto } from './dto/start-test.dto';
 import { SaveAnswerDto } from './dto/save-answer.dto';
-import { SubmissionStatus, TestType, UserRole } from '@shared/types/enum';
+import { SubmissionStatus, TestType, UserRole } from '../../../../frontend/src/shared/types/enum';
 import { GradingService } from '../grading/grading.service';
 import { ReportsService } from '../reports/reports.service';
 
@@ -441,10 +441,7 @@ export class SubmissionsService {
   /**
    * Get submissions for tests assigned by a teacher
    */
-  async getTeacherSubmissions(
-    teacherId: string,
-    filters?: { status?: string; testType?: string },
-  ) {
+  async getTeacherSubmissions(teacherId: string, filters?: { status?: string; testType?: string }) {
     const query = this.submissionRepo
       .createQueryBuilder('submission')
       .leftJoinAndSelect('submission.student', 'student')
@@ -510,11 +507,7 @@ export class SubmissionsService {
   /**
    * Get all submissions across all teachers (Admin only)
    */
-  async getAllSubmissions(filters?: {
-    status?: string;
-    testType?: string;
-    teacherId?: string;
-  }) {
+  async getAllSubmissions(filters?: { status?: string; testType?: string; teacherId?: string }) {
     const query = this.submissionRepo
       .createQueryBuilder('submission')
       .leftJoinAndSelect('submission.student', 'student')

@@ -1,4 +1,4 @@
-import { IAuthResponse, IUser } from '@shared/types/users.types';
+import { IAuthResponse, IUser } from '../../../../../frontend/src/shared/types/users.types';
 
 export class AuthResponseDto implements IAuthResponse {
   accessToken: string;

@@ -1,6 +1,6 @@
 import { IsOptional, IsString, IsEnum, IsInt, Min } from 'class-validator';
 import { Type } from 'class-transformer';
-import { TestStatus } from '@shared/types/enum';
+import { TestStatus } from '../../../../../frontend/src/shared/types/enum';
 
 export class AdtmTemplateQueryDto {
   @IsOptional()

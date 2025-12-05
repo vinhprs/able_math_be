@@ -11,7 +11,12 @@ import {
   StudentAssignment,
   AssignmentStatus,
 } from '../../database/entities/student-assignment.entity';
-import { TestType, SubmissionStatus, UserRole, AdtmAnswerType } from '@shared/types/enum';
+import {
+  TestType,
+  SubmissionStatus,
+  UserRole,
+  AdtmAnswerType,
+} from '../../../../frontend/src/shared/types/enum';
 import {
   Section1Input,
   Section1Result,

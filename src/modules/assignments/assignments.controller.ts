@@ -21,8 +21,8 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
-import { UserRole } from '@shared/types/enum';
-import { IJwtPayload } from '@shared/types/users.types';
+import { UserRole } from '../../../../frontend/src/shared/types/enum';
+import { IJwtPayload } from '../../../../frontend/src/shared/types/users.types';
 
 @Controller('assignments')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -58,10 +58,7 @@ export class AssignmentsController {
   @Post('assign-to-class')
   @Roles(UserRole.TEACHER, UserRole.ADMIN)
   @HttpCode(HttpStatus.CREATED)
-  async assignToClass(
-    @Body() assignDto: AssignToClassDto,
-    @CurrentUser() user: IJwtPayload,
-  ) {
+  async assignToClass(@Body() assignDto: AssignToClassDto, @CurrentUser() user: IJwtPayload) {
     return this.assignmentsService.assignToClass(assignDto, user.sub);
   }
 

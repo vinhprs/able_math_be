@@ -11,8 +11,8 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { UserRole } from '@shared/types/enum';
-import { IJwtPayload } from '@shared/types/users.types';
+import { UserRole } from '../../../../frontend/src/shared/types/enum';
+import { IJwtPayload } from '../../../../frontend/src/shared/types/users.types';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';

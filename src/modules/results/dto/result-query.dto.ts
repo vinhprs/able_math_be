@@ -1,6 +1,6 @@
 import { IsOptional, IsEnum, IsInt, Min, Max } from 'class-validator';
 import { Type } from 'class-transformer';
-import { TestType } from '@shared/types/enum';
+import { TestType } from '../../../../../frontend/src/shared/types/enum';
 
 export class ResultQueryDto {
   @IsOptional()
@@ -20,4 +20,3 @@ export class ResultQueryDto {
   @Max(100)
   limit?: number = 10;
 }
-

@@ -15,8 +15,8 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
-import { UserRole, TestStatus } from '@shared/types/enum';
-import { IJwtPayload } from '@shared/types/users.types';
+import { UserRole, TestStatus } from '../../../../frontend/src/shared/types/enum';
+import { IJwtPayload } from '../../../../frontend/src/shared/types/users.types';
 import { AssignStudentsDto } from './dto/assign-students.dto';
 import { AvailableStudentsQueryDto } from '../students/dto/available-students-query.dto';
 import { AdtmTemplateQueryDto } from '../tests/dto/adtm-template-query.dto';
@@ -65,11 +65,7 @@ export class TeacherAdtmController {
    */
   @Post('assign')
   @HttpCode(HttpStatus.CREATED)
-  async assignStudents(
-    @Body() dto: AssignStudentsDto,
-    @CurrentUser() user: IJwtPayload,
-  ) {
+  async assignStudents(@Body() dto: AssignStudentsDto, @CurrentUser() user: IJwtPayload) {
     return this.adtmGradingService.assignStudents(dto, user.sub);
   }
 }
-

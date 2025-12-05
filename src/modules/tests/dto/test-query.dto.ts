@@ -1,7 +1,7 @@
 import { IsOptional, IsEnum, IsInt, IsString, Min, Max } from 'class-validator';
 import { Type } from 'class-transformer';
-import { TestType, TestStatus } from '@shared/types/enum';
-import { PAGINATION } from '@shared/constants';
+import { TestType, TestStatus } from '../../../../../frontend/src/shared/types/enum';
+import { PAGINATION } from '../../../../../frontend/src/shared/constants';
 
 export class TestQueryDto {
   @IsOptional()

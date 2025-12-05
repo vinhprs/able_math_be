@@ -1,4 +1,4 @@
-import { AdtmAnswerType } from '@shared/types/enum';
+import { AdtmAnswerType } from '../../../../../frontend/src/shared/types/enum';
 
 /**
  * Answer input for Section 1 calculation

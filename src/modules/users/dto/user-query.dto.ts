@@ -1,7 +1,7 @@
 import { IsOptional, IsEnum, IsInt, Min, Max } from 'class-validator';
 import { Type } from 'class-transformer';
-import { UserRole } from '@shared/types/enum';
-import { PAGINATION } from '@shared/constants';
+import { UserRole } from '../../../../../frontend/src/shared/types/enum';
+import { PAGINATION } from '../../../../../frontend/src/shared/constants';
 
 export class UserQueryDto {
   @IsOptional()
@@ -24,4 +24,3 @@ export class UserQueryDto {
   @IsOptional()
   search?: string;
 }
-

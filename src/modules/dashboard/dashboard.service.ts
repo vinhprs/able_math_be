@@ -5,7 +5,7 @@ import { User } from '../../database/entities/user.entity';
 import { Test } from '../../database/entities/test.entity';
 import { StudentSubmission } from '../../database/entities/student-submission.entity';
 import { StudentAssignment } from '../../database/entities/student-assignment.entity';
-import { UserRole, SubmissionStatus, TestType } from '@shared/types/enum';
+import { UserRole, SubmissionStatus, TestType } from '../../../../frontend/src/shared/types/enum';
 import {
   AdminStatsDto,
   RecentActivityDto,
@@ -34,7 +34,20 @@ function endOfWeek(date: Date, weekStartsOn: number = 1): Date {
 }
 
 function formatDate(date: Date, formatStr: string): string {
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
   const d = new Date(date);
   if (formatStr === 'MMM d') {
     return `${months[d.getMonth()]} ${d.getDate()}`;
@@ -73,10 +86,7 @@ export class DashboardService {
 
     // Count active submissions (submitted but not graded, or in progress)
     const activeSubmissions = await this.submissionRepository.count({
-      where: [
-        { status: SubmissionStatus.SUBMITTED },
-        { status: SubmissionStatus.IN_PROGRESS },
-      ],
+      where: [{ status: SubmissionStatus.SUBMITTED }, { status: SubmissionStatus.IN_PROGRESS }],
     });
 
     // Tests by grade
@@ -92,7 +102,7 @@ export class DashboardService {
     const weekEnd = endOfWeek(new Date(), 1);
     const submissionsThisWeek = await this.submissionRepository
       .createQueryBuilder('submission')
-      .select("DATE(submission.created_at)", 'date')
+      .select('DATE(submission.created_at)', 'date')
       .addSelect('COUNT(*)', 'count')
       .where('submission.created_at >= :start', { start: weekStart })
       .andWhere('submission.created_at <= :end', { end: weekEnd })
@@ -189,9 +199,7 @@ export class DashboardService {
       relations: ['student'],
     });
 
-    const uniqueStudents = new Set(
-      assignments.map((a) => a.studentId),
-    ).size;
+    const uniqueStudents = new Set(assignments.map((a) => a.studentId)).size;
 
     // Count pending grading (A-DTM submissions assigned by this teacher that need grading)
     const pendingGrading = await this.submissionRepository
@@ -270,9 +278,10 @@ export class DashboardService {
     });
 
     return assignments.map((assignment) => {
-      const pendingGrading = assignment.submissions?.filter(
-        (s) => s.status === SubmissionStatus.SUBMITTED && !s.gradedAt,
-      ).length || 0;
+      const pendingGrading =
+        assignment.submissions?.filter(
+          (s) => s.status === SubmissionStatus.SUBMITTED && !s.gradedAt,
+        ).length || 0;
 
       return {
         id: assignment.id,
@@ -298,9 +307,7 @@ export class DashboardService {
     const pendingTests = assignments.filter(
       (a) =>
         !a.submissions?.some(
-          (s) =>
-            s.status === SubmissionStatus.SUBMITTED ||
-            s.status === SubmissionStatus.GRADED,
+          (s) => s.status === SubmissionStatus.SUBMITTED || s.status === SubmissionStatus.GRADED,
         ),
     ).length;
 
@@ -324,9 +331,7 @@ export class DashboardService {
       .filter((score): score is number => score !== null && score !== undefined);
 
     const averageScore =
-      scores.length > 0
-        ? scores.reduce((sum, score) => sum + score, 0) / scores.length
-        : 0;
+      scores.length > 0 ? scores.reduce((sum, score) => sum + score, 0) / scores.length : 0;
 
     // Latest score
     const latestSubmission = gradedSubmissions[0];
@@ -364,12 +369,11 @@ export class DashboardService {
     });
 
     return assignments.map((assignment) => {
-      const latestSubmission = assignment.submissions
-        ?.sort((a, b) => {
-          const dateA = a.submittedAt || a.createdAt;
-          const dateB = b.submittedAt || b.createdAt;
-          return dateB.getTime() - dateA.getTime();
-        })[0];
+      const latestSubmission = assignment.submissions?.sort((a, b) => {
+        const dateA = a.submittedAt || a.createdAt;
+        const dateB = b.submittedAt || b.createdAt;
+        return dateB.getTime() - dateA.getTime();
+      })[0];
 
       // Determine status
       let status = 'NOT_STARTED';
@@ -392,4 +396,3 @@ export class DashboardService {
     });
   }
 }
-

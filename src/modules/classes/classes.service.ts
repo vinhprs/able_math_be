@@ -12,7 +12,7 @@ import { CreateClassDto } from './dto/create-class.dto';
 import { UpdateClassDto } from './dto/update-class.dto';
 import { AddStudentsDto } from './dto/add-students.dto';
 import { ClassQueryDto } from './dto/class-query.dto';
-import { UserRole } from '@shared/types/enum';
+import { UserRole } from '../../../../frontend/src/shared/types/enum';
 
 @Injectable()
 export class ClassesService {
@@ -66,10 +66,9 @@ export class ClassesService {
     }
 
     if (search) {
-      queryBuilder.andWhere(
-        '(class.name ILIKE :search OR class.description ILIKE :search)',
-        { search: `%${search}%` },
-      );
+      queryBuilder.andWhere('(class.name ILIKE :search OR class.description ILIKE :search)', {
+        search: `%${search}%`,
+      });
     }
 
     // Pagination
@@ -214,4 +213,3 @@ export class ClassesService {
     };
   }
 }
-

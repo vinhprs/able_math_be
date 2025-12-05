@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
 import { User } from '../../database/entities/user.entity';
-import { IJwtPayload, IAuthResponse } from '@shared/types/users.types';
+import { IJwtPayload, IAuthResponse } from '../../../../frontend/src/shared/types/users.types';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 

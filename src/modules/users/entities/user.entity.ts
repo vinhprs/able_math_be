@@ -7,7 +7,7 @@ import {
   Index,
   OneToMany,
 } from 'typeorm';
-import { UserRole } from '@shared/types/enum';
+import { UserRole } from '../../../../../frontend/src/shared/types/enum';
 import { Test } from '../../tests/entities/test.entity';
 import { TestSubmission } from '../../tests/entities/test-submission.entity';
 

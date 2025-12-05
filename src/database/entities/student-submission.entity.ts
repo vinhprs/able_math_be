@@ -10,7 +10,7 @@ import {
   OneToMany,
   OneToOne,
 } from 'typeorm';
-import { SubmissionStatus } from '@shared/types/enum';
+import { SubmissionStatus } from '../../../../frontend/src/shared/types/enum';
 import { Test } from './test.entity';
 import { User } from './user.entity';
 import { StudentAssignment } from './student-assignment.entity';

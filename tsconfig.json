@@ -18,10 +18,9 @@
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "paths": {
-      "@shared/*": ["../shared/*"]
+      "@shared/*": ["../frontend/src/shared/*"]
     }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist", "test"]
 }
-

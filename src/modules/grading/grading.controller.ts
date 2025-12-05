@@ -11,7 +11,7 @@ import { AdtmGradingService } from './adtm-grading.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
-import { UserRole } from '@shared/types/enum';
+import { UserRole } from '../../../../frontend/src/shared/types/enum';
 
 @Controller('grading')
 @UseGuards(JwtAuthGuard, RolesGuard)

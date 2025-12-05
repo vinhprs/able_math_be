@@ -1,5 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { IJwtPayload } from '@shared/types/users.types';
+import { IJwtPayload } from '../../../../frontend/src/shared/types/users.types';
 
 /**
  * Decorator to get current authenticated user from request
@@ -13,4 +13,3 @@ export const CurrentUser = createParamDecorator(
     return data ? user?.[data] : user;
   },
 );
-

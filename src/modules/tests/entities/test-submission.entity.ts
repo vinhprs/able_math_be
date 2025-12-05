@@ -9,7 +9,7 @@ import {
   Index,
   OneToMany,
 } from 'typeorm';
-import { SubmissionStatus } from '@shared/types/enum';
+import { SubmissionStatus } from '../../../../../frontend/src/shared/types/enum';
 import { Test } from './test.entity';
 import { User } from '../../../database/entities/user.entity';
 import { SubmissionAnswer } from './submission-answer.entity';
