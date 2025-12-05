@@ -8,7 +8,7 @@ import {
   JoinColumn,
   Index,
 } from 'typeorm';
-import { AdtmAnswerType } from '../../../../frontend/src/shared/types/enum';
+import { AdtmAnswerType } from '@shared/types/enum';
 import { StudentSubmission } from './student-submission.entity';
 import { TestQuestion } from './test-question.entity';
 

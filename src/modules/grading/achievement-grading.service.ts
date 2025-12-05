@@ -5,7 +5,7 @@ import { TestQuestion } from '../../database/entities/test-question.entity';
 import { StudentAnswer } from '../../database/entities/student-answer.entity';
 import { StudentSubmission } from '../../database/entities/student-submission.entity';
 import { Test } from '../../database/entities/test.entity';
-import { SubmissionStatus, TestType } from '../../../../frontend/src/shared/types/enum';
+import { SubmissionStatus, TestType } from '@shared/types/enum';
 import { GradingResult } from './interfaces/grading-result.interface';
 import { UnitScore } from './interfaces/unit-score.interface';
 import { DifficultyScore } from './interfaces/difficulty-score.interface';

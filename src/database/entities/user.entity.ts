@@ -10,7 +10,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { UserRole } from '../../../../frontend/src/shared/types/enum';
+import { UserRole } from '@shared/types/enum';
 import { Test } from './test.entity';
 import { StudentAssignment } from './student-assignment.entity';
 import { StudentSubmission } from './student-submission.entity';

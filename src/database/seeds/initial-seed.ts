@@ -2,7 +2,7 @@ import { DataSource } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { dataSourceOptions } from '../../config/data-source';
 import { User } from '../entities/user.entity';
-import { UserRole } from '../../../../frontend/src/shared/types/enum';
+import { UserRole } from '@shared/types/enum';
 
 /**
  * Initial database seed

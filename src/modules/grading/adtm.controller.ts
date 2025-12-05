@@ -16,8 +16,8 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
-import { UserRole, SubmissionStatus } from '../../../../frontend/src/shared/types/enum';
-import { IJwtPayload } from '../../../../frontend/src/shared/types/users.types';
+import { UserRole, SubmissionStatus } from '@shared/types/enum';
+import { IJwtPayload } from '@shared/types/users.types';
 import { RegisterStudentDto, GradeSection1Dto, GradeSectionDto } from './dto/adtm-workflow.dto';
 import { SaveProgressDto } from './dto/save-progress.dto';
 

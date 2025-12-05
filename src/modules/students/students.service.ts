@@ -14,7 +14,7 @@ import { Test } from '../../database/entities/test.entity';
 import { UpdateStudentProfileDto } from './dto/update-student-profile.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { AvailableStudentsQueryDto } from './dto/available-students-query.dto';
-import { UserRole, SubmissionStatus, TestType } from '../../../../frontend/src/shared/types/enum';
+import { SubmissionStatus, TestType, UserRole } from '@shared/types/enum';
 
 @Injectable()
 export class StudentsService {

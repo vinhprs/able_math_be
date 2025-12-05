@@ -7,7 +7,7 @@ import { Test } from '../../database/entities/test.entity';
 import { TestQuestion } from '../../database/entities/test-question.entity';
 import { AdtmSubmission } from '../../database/entities/adtm-submission.entity';
 import { ResultQueryDto } from './dto/result-query.dto';
-import { SubmissionStatus, TestType } from '../../../../frontend/src/shared/types/enum';
+import { SubmissionStatus, TestType } from '@shared/types/enum';
 
 @Injectable()
 export class ResultsService {

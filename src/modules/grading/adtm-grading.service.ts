@@ -1,38 +1,28 @@
-import { Injectable, Logger, NotFoundException, BadRequestException } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository, In } from 'typeorm';
-import { StudentSubmission } from '../../database/entities/student-submission.entity';
-import { StudentAnswer } from '../../database/entities/student-answer.entity';
+import { DataSource, In, Repository } from 'typeorm';
 import { AdtmSubmission } from '../../database/entities/adtm-submission.entity';
+import { StudentAnswer } from '../../database/entities/student-answer.entity';
+import {
+  AssignmentStatus,
+  StudentAssignment,
+} from '../../database/entities/student-assignment.entity';
+import { StudentSubmission } from '../../database/entities/student-submission.entity';
 import { TestQuestion } from '../../database/entities/test-question.entity';
 import { Test } from '../../database/entities/test.entity';
 import { User } from '../../database/entities/user.entity';
+import { AdtmAnswerType, SubmissionStatus, TestType, UserRole } from '../../shared/types/enum';
+import { GradeSection1Dto, GradeSectionDto, RegisterStudentDto } from './dto/adtm-workflow.dto';
+import { AssignStudentsDto } from './dto/assign-students.dto';
+import { SaveProgressDto } from './dto/save-progress.dto';
 import {
-  StudentAssignment,
-  AssignmentStatus,
-} from '../../database/entities/student-assignment.entity';
-import {
-  TestType,
-  SubmissionStatus,
-  UserRole,
-  AdtmAnswerType,
-} from '../../../../frontend/src/shared/types/enum';
-import {
+  AdtmGradingResult,
   Section1Input,
   Section1Result,
   SectionInput,
   SectionResult,
   UnitScoreResult,
-  AdtmGradingResult,
 } from './interfaces/adtm-grading.interface';
-import {
-  RegisterStudentDto,
-  GradeSection1Dto,
-  GradeSectionDto,
-  QuestionScoreDto,
-} from './dto/adtm-workflow.dto';
-import { AssignStudentsDto } from './dto/assign-students.dto';
-import { SaveProgressDto } from './dto/save-progress.dto';
 
 /**
  * Service for grading A-DTM (Entrance Level Diagnostic Test) submissions

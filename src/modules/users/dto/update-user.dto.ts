@@ -1,8 +1,7 @@
-import { IsEmail, IsOptional, IsBoolean, IsString, IsEnum, MinLength } from 'class-validator';
-import { PartialType, OmitType } from '@nestjs/mapped-types';
+import { OmitType, PartialType } from '@nestjs/mapped-types';
+import { PASSWORD_REQUIREMENTS } from '@shared/constants';
+import { IsBoolean, IsOptional, IsString, MinLength } from 'class-validator';
 import { CreateUserDto } from './create-user.dto';
-import { UserRole } from '../../../../../frontend/src/shared/types/enum';
-import { PASSWORD_REQUIREMENTS } from '../../../../../frontend/src/shared/constants';
 
 export class UpdateUserDto extends PartialType(OmitType(CreateUserDto, ['username'])) {
   @IsOptional()

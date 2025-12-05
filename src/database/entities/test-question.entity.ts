@@ -9,7 +9,7 @@ import {
   Index,
   OneToMany,
 } from 'typeorm';
-import { AnswerType } from '../../../../frontend/src/shared/types/enum';
+import { AnswerType } from '@shared/types/enum';
 import { Test } from './test.entity';
 import { StudentAnswer } from './student-answer.entity';
 import { Unit } from './unit.entity';

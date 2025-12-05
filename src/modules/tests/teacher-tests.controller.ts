@@ -4,7 +4,7 @@ import { TestQueryDto } from './dto/test-query.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
-import { UserRole } from '../../../../frontend/src/shared/types/enum';
+import { UserRole } from '@shared/types/enum';
 
 @Controller('teacher/tests')
 @UseGuards(JwtAuthGuard, RolesGuard)

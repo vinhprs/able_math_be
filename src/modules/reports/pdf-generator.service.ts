@@ -142,7 +142,6 @@ export class PdfGeneratorService {
             timeout: 30000,
           });
           // Wait a bit for any dynamic content
-          await page.waitForTimeout(2000);
         }
 
         // Generate PDF with timeout

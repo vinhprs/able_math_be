@@ -29,7 +29,7 @@ import {
   Class,
   User,
 } from '../src/database/entities';
-import { UserRole } from '@shared/types/enum';
+import { UserRole } from '../src/shared/types/enum';
 import * as path from 'path';
 import * as fs from 'fs';
 

@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { StudentSubmission } from '../../database/entities/student-submission.entity';
 import { Test } from '../../database/entities/test.entity';
-import { TestType, SubmissionStatus } from '../../../../frontend/src/shared/types/enum';
+import { TestType, SubmissionStatus } from '@shared/types/enum';
 import { AchievementGradingService } from './achievement-grading.service';
 import { GradingResult } from './interfaces/grading-result.interface';
 

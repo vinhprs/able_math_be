@@ -1,7 +1,7 @@
 import { IsOptional, IsEnum, IsInt, Min, Max, IsString, IsBoolean } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
-import { UserRole } from '../../../../../frontend/src/shared/types/enum';
-import { PAGINATION } from '../../../../../frontend/src/shared/constants';
+import { UserRole } from '@shared/types/enum';
+import { PAGINATION } from '@shared/constants';
 
 export class UserQueryDto {
   @IsOptional()

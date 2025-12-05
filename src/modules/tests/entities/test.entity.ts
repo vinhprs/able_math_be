@@ -9,12 +9,7 @@ import {
   JoinColumn,
   Index,
 } from 'typeorm';
-import {
-  TestType,
-  TestStatus,
-  GradeLevel,
-  Term,
-} from '../../../../../frontend/src/shared/types/enum';
+import { TestType, TestStatus, GradeLevel, Term } from '@shared/types/enum';
 import { User } from '../../../database/entities/user.entity';
 import { TestQuestion } from './test-question.entity';
 import { TestSubmission } from './test-submission.entity';

@@ -19,8 +19,8 @@ import { Public } from '../../common/decorators/public.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { User } from '../../database/entities/user.entity';
-import { UserRole } from '../../../../frontend/src/shared/types/enum';
-import { IJwtPayload } from '../../../../frontend/src/shared/types/users.types';
+import { UserRole } from '@shared/types/enum';
+import { IJwtPayload } from '@shared/types/users.types';
 
 @Controller('auth')
 export class AuthController {

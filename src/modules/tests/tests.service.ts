@@ -16,7 +16,7 @@ import { UpdateTestDto } from './dto/update-test.dto';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { TestQueryDto } from './dto/test-query.dto';
 import { AdtmTemplateQueryDto } from './dto/adtm-template-query.dto';
-import { TestType, TestStatus, SubmissionStatus } from '../../../../frontend/src/shared/types/enum';
+import { TestType, TestStatus, SubmissionStatus } from '@shared/types/enum';
 import {
   TestWithQuestions,
   TestDetailResponse,

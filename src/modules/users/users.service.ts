@@ -13,7 +13,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserQueryDto } from './dto/user-query.dto';
 import { ConfigService } from '@nestjs/config';
-import { UserRole } from '../../../../frontend/src/shared/types/enum';
+import { UserRole } from '@shared/types/enum';
 
 @Injectable()
 export class UsersService {

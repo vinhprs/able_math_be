@@ -5,7 +5,7 @@ import { User } from '../../database/entities/user.entity';
 import { Test } from '../../database/entities/test.entity';
 import { StudentSubmission } from '../../database/entities/student-submission.entity';
 import { StudentAssignment } from '../../database/entities/student-assignment.entity';
-import { UserRole, SubmissionStatus, TestType } from '../../../../frontend/src/shared/types/enum';
+import { UserRole, SubmissionStatus, TestType } from '@shared/types/enum';
 import {
   AdminStatsDto,
   RecentActivityDto,

@@ -14,7 +14,7 @@ import { TestsService } from './tests.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
-import { UserRole } from '../../../../frontend/src/shared/types/enum';
+import { UserRole } from '@shared/types/enum';
 import { AdtmTemplateQueryDto } from './dto/adtm-template-query.dto';
 import { UpdateTemplateStatusDto } from './dto/update-template-status.dto';
 

@@ -1,4 +1,4 @@
-import { Term } from '../../../../../frontend/src/shared/types/enum';
+import { Term } from '@shared/types/enum';
 import { Type } from 'class-transformer';
 import {
   IsArray,

@@ -54,7 +54,7 @@ export const USERNAME_REQUIREMENTS = {
  * JWT configuration
  */
 export const JWT_CONFIG = {
-  DEFAULT_EXPIRES_IN: "7d",
+  DEFAULT_EXPIRES_IN: '7d',
 } as const;
 
 /**

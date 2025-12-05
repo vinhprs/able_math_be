@@ -7,11 +7,8 @@ import {
   Length,
   MinLength,
 } from 'class-validator';
-import { UserRole } from '../../../../../frontend/src/shared/types/enum';
-import {
-  USERNAME_REQUIREMENTS,
-  PASSWORD_REQUIREMENTS,
-} from '../../../../../frontend/src/shared/constants';
+import { UserRole } from '@shared/types/enum';
+import { USERNAME_REQUIREMENTS, PASSWORD_REQUIREMENTS } from '@shared/constants';
 
 export class CreateUserDto {
   @IsString()

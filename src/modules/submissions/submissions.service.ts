@@ -18,7 +18,7 @@ import { TestQuestion } from '../../database/entities/test-question.entity';
 import { User } from '../../database/entities/user.entity';
 import { StartTestDto } from './dto/start-test.dto';
 import { SaveAnswerDto } from './dto/save-answer.dto';
-import { SubmissionStatus, TestType, UserRole } from '../../../../frontend/src/shared/types/enum';
+import { SubmissionStatus, TestType, UserRole } from '@shared/types/enum';
 import { GradingService } from '../grading/grading.service';
 import { ReportsService } from '../reports/reports.service';
 

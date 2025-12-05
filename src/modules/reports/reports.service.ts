@@ -12,7 +12,7 @@ import { AdtmSubmission } from '../../database/entities/adtm-submission.entity';
 import { ReportCard, ReportStatus } from '../../database/entities/report-card.entity';
 import { Test } from '../../database/entities/test.entity';
 import { User } from '../../database/entities/user.entity';
-import { TestType, SubmissionStatus } from '../../../../frontend/src/shared/types/enum';
+import { TestType, SubmissionStatus } from '@shared/types/enum';
 import { AchievementGradingService } from '../grading/achievement-grading.service';
 import { AdtmGradingService } from '../grading/adtm-grading.service';
 import {
