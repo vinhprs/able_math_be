@@ -3,15 +3,17 @@ import {
   ConflictException,
   NotFoundException,
   BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Like } from 'typeorm';
+import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { User } from '../../database/entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserQueryDto } from './dto/user-query.dto';
 import { ConfigService } from '@nestjs/config';
+import { UserRole } from '../../../../frontend/src/shared/types/enum';
 
 @Injectable()
 export class UsersService {
@@ -22,16 +24,36 @@ export class UsersService {
   ) {}
 
   /**
-   * Create a new user
+   * Find user by ID (internal method)
    */
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    // Check if username or email already exists
-    const existingUser = await this.userRepository.findOne({
+  async findById(id: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return user;
+  }
+
+  /**
+   * Create a new user with RBAC
+   */
+  async create(createUserDto: CreateUserDto, creatorId: string): Promise<User> {
+    const creator = await this.findById(creatorId);
+
+    // Permission check
+    if (creator.role === UserRole.TEACHER && createUserDto.role !== UserRole.STUDENT) {
+      throw new ForbiddenException('Teachers can only create student accounts');
+    }
+    if (creator.role === UserRole.STUDENT) {
+      throw new ForbiddenException('Students cannot create accounts');
+    }
+
+    // Check uniqueness
+    const existing = await this.userRepository.findOne({
       where: [{ username: createUserDto.username }, { email: createUserDto.email }],
     });
-
-    if (existingUser) {
-      if (existingUser.username === createUserDto.username) {
+    if (existing) {
+      if (existing.username === createUserDto.username) {
         throw new ConflictException('Username already exists');
       }
       throw new ConflictException('Email already exists');
@@ -45,64 +67,129 @@ export class UsersService {
     const user = this.userRepository.create({
       ...createUserDto,
       password: hashedPassword,
+      createdBy: creatorId,
     });
 
-    return this.userRepository.save(user);
+    const saved = await this.userRepository.save(user);
+    // Remove password from response
+    return saved;
   }
 
   /**
-   * Find all users with pagination and filters
+   * Find all users with pagination, filters, and RBAC
    */
   async findAll(
-    query: UserQueryDto,
-  ): Promise<{ data: User[]; total: number; page: number; totalPages: number }> {
-    const { page = 1, limit = 10, role, search } = query;
-    const skip = (page - 1) * limit;
+    queryDto: UserQueryDto,
+    requesterId: string,
+  ): Promise<{
+    data: User[];
+    meta: { total: number; page: number; limit: number; totalPages: number };
+  }> {
+    const requester = await this.findById(requesterId);
 
-    const queryBuilder = this.userRepository.createQueryBuilder('user');
+    const qb = this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.creator', 'creator');
 
-    // Apply role filter
-    if (role) {
-      queryBuilder.andWhere('user.role = :role', { role });
+    // RBAC filtering
+    if (requester.role === UserRole.TEACHER) {
+      qb.where('user.createdBy = :requesterId', { requesterId }).andWhere('user.role = :role', {
+        role: UserRole.STUDENT,
+      });
+    } else if (requester.role === UserRole.STUDENT) {
+      qb.where('user.id = :requesterId', { requesterId });
     }
 
-    // Apply search filter
-    if (search) {
-      queryBuilder.andWhere(
-        '(user.username LIKE :search OR user.email LIKE :search OR user.fullName LIKE :search)',
-        { search: `%${search}%` },
+    // Apply filters (only for ADMIN)
+    if (requester.role === UserRole.ADMIN) {
+      if (queryDto.role) {
+        qb.andWhere('user.role = :role', { role: queryDto.role });
+      }
+    }
+
+    if (queryDto.search) {
+      qb.andWhere(
+        '(user.username ILIKE :search OR user.email ILIKE :search OR user.fullName ILIKE :search)',
+        { search: `%${queryDto.search}%` },
       );
     }
 
-    // Get total count
-    const total = await queryBuilder.getCount();
+    if (queryDto.school) {
+      qb.andWhere('user.school = :school', { school: queryDto.school });
+    }
 
-    // Get paginated data
-    const data = await queryBuilder
-      .skip(skip)
+    if (queryDto.grade) {
+      qb.andWhere('user.grade = :grade', { grade: queryDto.grade });
+    }
+
+    if (queryDto.isActive !== undefined) {
+      qb.andWhere('user.isActive = :isActive', { isActive: queryDto.isActive });
+    }
+
+    if (queryDto.createdBy && requester.role === UserRole.ADMIN) {
+      qb.andWhere('user.createdBy = :createdBy', { createdBy: queryDto.createdBy });
+    }
+
+    // Pagination
+    const page = queryDto.page || 1;
+    const limit = queryDto.limit || 20;
+    qb.skip((page - 1) * limit)
       .take(limit)
-      .orderBy('user.createdAt', 'DESC')
-      .getMany();
+      .orderBy('user.createdAt', 'DESC');
+
+    const [users, total] = await qb.getManyAndCount();
+
+    // Remove passwords
+    const sanitizedUsers = users.map((user) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword;
+    });
 
     return {
-      data,
-      total,
-      page,
-      totalPages: Math.ceil(total / limit),
+      data: sanitizedUsers as User[],
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
     };
   }
 
   /**
-   * Find user by ID
+   * Find user by ID with optional permission check
    */
-  async findOne(id: string): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id } });
+  async findOne(id: string, requesterId?: string): Promise<User> {
+    // Load user with creator relation
+    const user = await this.userRepository.findOne({
+      where: { id },
+      relations: ['creator'],
+    });
 
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
 
-    return user;
+    // If requesterId is provided, check permissions
+    if (requesterId) {
+      const requester = await this.findById(requesterId);
+
+      if (requester.role === UserRole.TEACHER) {
+        if (user.createdBy !== requesterId || user.role !== UserRole.STUDENT) {
+          throw new ForbiddenException('You can only view students you created');
+        }
+      } else if (requester.role === UserRole.STUDENT) {
+        if (id !== requesterId) {
+          throw new ForbiddenException('You can only view your own profile');
+        }
+      }
+    }
+
+    // Remove password from response
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword as User;
   }
 
   /**
@@ -120,28 +207,69 @@ export class UsersService {
   }
 
   /**
-   * Update user
+   * Update user with RBAC
    */
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
-    const user = await this.findOne(id);
+  async update(id: string, updateDto: UpdateUserDto, requesterId: string): Promise<User> {
+    const requester = await this.findById(requesterId);
+    const user = await this.findById(id);
 
-    // Check if email is being changed and if it already exists
-    if (updateUserDto.email && updateUserDto.email !== user.email) {
-      const existingUser = await this.findByEmail(updateUserDto.email);
-      if (existingUser) {
+    // Permission check
+    if (requester.role === UserRole.TEACHER) {
+      if (user.createdBy !== requesterId || user.role !== UserRole.STUDENT) {
+        throw new ForbiddenException('You can only update students you created');
+      }
+      if (updateDto.role) {
+        throw new ForbiddenException('Cannot change role');
+      }
+    } else if (requester.role === UserRole.STUDENT) {
+      if (id !== requesterId) {
+        throw new ForbiddenException('Can only update own profile');
+      }
+      if (updateDto.role || updateDto.email) {
+        throw new ForbiddenException('Cannot change sensitive fields');
+      }
+    }
+
+    // Check email uniqueness
+    if (updateDto.email && updateDto.email !== user.email) {
+      const existing = await this.findByEmail(updateDto.email);
+      if (existing) {
         throw new ConflictException('Email already exists');
       }
     }
 
-    Object.assign(user, updateUserDto);
-    return this.userRepository.save(user);
+    // Hash password if changing
+    if (updateDto.password) {
+      const saltRounds = this.configService.get<number>('app.bcryptSaltRounds', 10);
+      updateDto.password = await bcrypt.hash(updateDto.password, saltRounds);
+    }
+
+    Object.assign(user, updateDto);
+    const updated = await this.userRepository.save(user);
+    // Remove password from response
+    return updated;
   }
 
   /**
-   * Delete user (soft delete by setting isActive to false)
+   * Delete user with RBAC (soft delete)
    */
-  async remove(id: string): Promise<void> {
-    const user = await this.findOne(id);
+  async delete(id: string, requesterId: string): Promise<void> {
+    if (id === requesterId) {
+      throw new BadRequestException('Cannot delete own account');
+    }
+
+    const requester = await this.findById(requesterId);
+    const user = await this.findById(id);
+
+    if (requester.role === UserRole.TEACHER) {
+      if (user.createdBy !== requesterId || user.role !== UserRole.STUDENT) {
+        throw new ForbiddenException('You can only delete students you created');
+      }
+    } else if (requester.role === UserRole.STUDENT) {
+      throw new ForbiddenException('Students cannot delete accounts');
+    }
+
+    // Soft delete
     user.isActive = false;
     await this.userRepository.save(user);
   }

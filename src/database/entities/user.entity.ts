@@ -7,6 +7,8 @@ import {
   Index,
   OneToMany,
   ManyToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { UserRole } from '../../../../frontend/src/shared/types/enum';
 import { Test } from './test.entity';
@@ -56,7 +58,17 @@ export class User {
   @Column({ name: 'is_active', default: true })
   isActive: boolean;
 
+  @Column({ name: 'created_by', type: 'uuid', nullable: true })
+  createdBy: string;
+
   // Relations
+  @ManyToOne(() => User, (user) => user.createdUsers, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'created_by' })
+  creator: User;
+
+  @OneToMany(() => User, (user) => user.creator)
+  createdUsers: User[];
+
   @OneToMany(() => Test, (test) => test.creator)
   createdTests: Test[];
 

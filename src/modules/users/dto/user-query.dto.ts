@@ -1,5 +1,5 @@
-import { IsOptional, IsEnum, IsInt, Min, Max } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsOptional, IsEnum, IsInt, Min, Max, IsString, IsBoolean } from 'class-validator';
+import { Type, Transform } from 'class-transformer';
 import { UserRole } from '../../../../../frontend/src/shared/types/enum';
 import { PAGINATION } from '../../../../../frontend/src/shared/constants';
 
@@ -22,5 +22,23 @@ export class UserQueryDto {
   role?: UserRole;
 
   @IsOptional()
+  @IsString()
   search?: string;
+
+  @IsOptional()
+  @IsString()
+  school?: string;
+
+  @IsOptional()
+  @IsString()
+  grade?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => value === 'true' || value === true)
+  @IsBoolean()
+  isActive?: boolean;
+
+  @IsOptional()
+  @IsString()
+  createdBy?: string;
 }

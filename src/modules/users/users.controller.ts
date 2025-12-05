@@ -9,6 +9,7 @@ import {
   Query,
   UseGuards,
   ParseUUIDPipe,
+  HttpCode,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -27,58 +28,69 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  @Roles(UserRole.ADMIN)
-  async create(@Body() createUserDto: CreateUserDto) {
-    const user = await this.usersService.create(createUserDto);
-    // Remove password from response
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...result } = user;
-    return result;
+  @Roles(UserRole.ADMIN, UserRole.TEACHER)
+  async create(@Body() dto: CreateUserDto, @CurrentUser() user: IJwtPayload) {
+    return {
+      success: true,
+      data: await this.usersService.create(dto, user.sub),
+    };
   }
 
   @Get()
-  @Roles(UserRole.ADMIN, UserRole.TEACHER)
-  async findAll(@Query() query: UserQueryDto) {
-    const result = await this.usersService.findAll(query);
-    // Remove passwords from response
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const sanitizedData = result.data.map(({ password, ...user }) => user);
+  @Roles(UserRole.ADMIN, UserRole.TEACHER, UserRole.STUDENT)
+  async findAll(@Query() query: UserQueryDto, @CurrentUser() user: IJwtPayload) {
     return {
-      ...result,
-      data: sanitizedData,
+      success: true,
+      ...(await this.usersService.findAll(query, user.sub)),
     };
   }
 
   @Get('me')
   async getProfile(@CurrentUser() user: IJwtPayload) {
-    const userData = await this.usersService.findOne(user.sub);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...result } = userData;
-    return result;
+    return {
+      success: true,
+      data: await this.usersService.findOne(user.sub),
+    };
+  }
+
+  @Get('my-students')
+  @Roles(UserRole.TEACHER)
+  async getMyStudents(@Query() query: UserQueryDto, @CurrentUser() user: IJwtPayload) {
+    return {
+      success: true,
+      ...(await this.usersService.findAll(
+        { ...query, createdBy: user.sub, role: UserRole.STUDENT },
+        user.sub,
+      )),
+    };
   }
 
   @Get(':id')
   @Roles(UserRole.ADMIN, UserRole.TEACHER)
-  async findOne(@Param('id', ParseUUIDPipe) id: string) {
-    const user = await this.usersService.findOne(id);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...result } = user;
-    return result;
+  async findOne(@Param('id', ParseUUIDPipe) id: string, @CurrentUser() user: IJwtPayload) {
+    return {
+      success: true,
+      data: await this.usersService.findOne(id, user.sub),
+    };
   }
 
   @Patch(':id')
-  @Roles(UserRole.ADMIN)
-  async update(@Param('id', ParseUUIDPipe) id: string, @Body() updateUserDto: UpdateUserDto) {
-    const user = await this.usersService.update(id, updateUserDto);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...result } = user;
-    return result;
+  @Roles(UserRole.ADMIN, UserRole.TEACHER, UserRole.STUDENT)
+  async update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: UpdateUserDto,
+    @CurrentUser() user: IJwtPayload,
+  ) {
+    return {
+      success: true,
+      data: await this.usersService.update(id, dto, user.sub),
+    };
   }
 
   @Delete(':id')
-  @Roles(UserRole.ADMIN)
-  async remove(@Param('id', ParseUUIDPipe) id: string) {
-    await this.usersService.remove(id);
-    return { message: 'User deleted successfully' };
+  @Roles(UserRole.ADMIN, UserRole.TEACHER)
+  @HttpCode(204)
+  async remove(@Param('id', ParseUUIDPipe) id: string, @CurrentUser() user: IJwtPayload) {
+    await this.usersService.delete(id, user.sub);
   }
 }
