@@ -13,4 +13,4 @@ export { StudentAnswer } from './student-answer.entity';
 export { AdtmSubmission } from './adtm-submission.entity';
 export { ReportCard, ReportStatus } from './report-card.entity';
 export { Class } from './class.entity';
-
+export { CurriculumUnit } from './curriculum-unit.entity';

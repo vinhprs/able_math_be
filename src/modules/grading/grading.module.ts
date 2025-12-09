@@ -3,7 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { GradingService } from './grading.service';
 import { AchievementGradingService } from './achievement-grading.service';
 import { AdtmGradingService } from './adtm-grading.service';
-import { GradingController } from './grading.controller';
 import { AdtmController } from './adtm.controller';
 import { TeacherAdtmController } from './teacher-adtm.controller';
 import { TestsModule } from '../tests/tests.module';
@@ -30,7 +29,7 @@ import { StudentAssignment } from '../../database/entities/student-assignment.en
     forwardRef(() => TestsModule),
     forwardRef(() => StudentsModule),
   ],
-  controllers: [GradingController, AdtmController, TeacherAdtmController],
+  controllers: [AdtmController, TeacherAdtmController],
   providers: [GradingService, AchievementGradingService, AdtmGradingService],
   exports: [GradingService, AchievementGradingService, AdtmGradingService],
 })

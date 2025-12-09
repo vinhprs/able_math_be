@@ -65,19 +65,6 @@ export class SubmissionsController {
   }
 
   /**
-   * Save multiple answers at once (batch save)
-   */
-  @Put(':submissionId/answers/batch')
-  @HttpCode(HttpStatus.OK)
-  async saveAnswersBatch(
-    @Param('submissionId', ParseUUIDPipe) submissionId: string,
-    @Body() answers: SaveAnswerDto[],
-    @CurrentUser() user: IJwtPayload,
-  ) {
-    return this.submissionsService.saveAnswersBatch(submissionId, answers, user.sub);
-  }
-
-  /**
    * Submit test - final submission
    * Cannot be undone (but can add edit feature later)
    */
@@ -88,18 +75,6 @@ export class SubmissionsController {
     @CurrentUser() user: IJwtPayload,
   ) {
     return this.submissionsService.submitTest(submissionId, user.sub);
-  }
-
-  /**
-   * Get submission progress
-   * How many questions answered vs total
-   */
-  @Get(':submissionId/progress')
-  async getProgress(
-    @Param('submissionId', ParseUUIDPipe) submissionId: string,
-    @CurrentUser() user: IJwtPayload,
-  ) {
-    return this.submissionsService.getSubmissionProgress(submissionId, user.sub);
   }
 }
 

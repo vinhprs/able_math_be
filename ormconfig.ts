@@ -13,6 +13,7 @@ import {
   AdtmSubmission,
   ReportCard,
   Class,
+  CurriculumUnit,
 } from './src/database/entities';
 
 dotenv.config();
@@ -35,6 +36,7 @@ export default new DataSource({
     AdtmSubmission,
     ReportCard,
     Class,
+    CurriculumUnit,
   ],
   migrations: ['src/migrations/**/*{.ts,.js}'],
   synchronize: false,

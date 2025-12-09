@@ -11,6 +11,7 @@ import {
   AdtmSubmission,
   ReportCard,
   Class,
+  CurriculumUnit,
 } from '../database/entities';
 
 export default registerAs(
@@ -33,6 +34,7 @@ export default registerAs(
       AdtmSubmission,
       ReportCard,
       Class,
+      CurriculumUnit,
     ],
     synchronize: process.env.NODE_ENV === 'development',
     logging: false,

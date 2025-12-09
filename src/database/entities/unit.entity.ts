@@ -36,4 +36,3 @@ export class Unit {
   @OneToMany(() => TestQuestion, (question) => question.unit)
   questions: TestQuestion[];
 }
-
