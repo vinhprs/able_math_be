@@ -251,36 +251,6 @@ export class ReportsController {
   }
 
   /**
-   * Get PDF file directly (alternative endpoint)
-   * GET /api/reports/pdf/:fileName
-   */
-  @Get('pdf/:fileName')
-  @Roles(UserRole.ADMIN, UserRole.TEACHER, UserRole.STUDENT)
-  async getPdfFile(@Param('fileName') fileName: string, @Res() res: Response) {
-    const filePath = this.pdfGeneratorService.getPdfPath(fileName);
-
-    try {
-      // Check if file exists
-      if (!fs.existsSync(filePath)) {
-        throw new NotFoundException(`PDF file not found: ${fileName}`);
-      }
-
-      // Set headers
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `inline; filename="${fileName}"`);
-
-      // Stream file
-      const fileStream = fs.createReadStream(filePath);
-      fileStream.pipe(res);
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new NotFoundException(`PDF file not found: ${fileName}`);
-    }
-  }
-
-  /**
    * Generate PDF for a report
    * POST /api/reports/:submissionId/generate-pdf
    */

@@ -242,67 +242,6 @@ export class SubmissionsService {
   }
 
   /**
-   * Save multiple answers at once (batch)
-   */
-  async saveAnswersBatch(submissionId: string, answers: SaveAnswerDto[], studentId: string) {
-    const submission = await this.submissionRepo.findOne({
-      where: { id: submissionId, studentId },
-    });
-
-    if (!submission) {
-      throw new ForbiddenException('Not authorized');
-    }
-
-    if (
-      submission.status === SubmissionStatus.SUBMITTED ||
-      submission.status === SubmissionStatus.GRADED
-    ) {
-      throw new BadRequestException('Cannot modify submitted test');
-    }
-
-    // Use transaction for batch save
-    await this.dataSource.transaction(async (manager) => {
-      for (const answerDto of answers) {
-        // Verify question belongs to test
-        const question = await manager.findOne(TestQuestion, {
-          where: {
-            id: answerDto.questionId,
-            testId: submission.testId,
-          },
-        });
-
-        if (!question) continue; // Skip invalid questions
-
-        // Find or create answer
-        let answer = await manager.findOne(StudentAnswer, {
-          where: {
-            submissionId,
-            questionId: answerDto.questionId,
-          },
-        });
-
-        if (answer) {
-          answer.studentAnswer = answerDto.answer;
-        } else {
-          answer = manager.create(StudentAnswer, {
-            submissionId,
-            questionId: answerDto.questionId,
-            studentAnswer: answerDto.answer,
-          });
-        }
-
-        await manager.save(StudentAnswer, answer);
-      }
-    });
-
-    return {
-      success: true,
-      saved: answers.length,
-      message: 'Answers saved',
-    };
-  }
-
-  /**
    * Submit test - final submission
    * Automatically grades Achievement tests
    */
@@ -395,46 +334,6 @@ export class SubmissionsService {
           }
         : null,
       reportGenerated, // Indicate if report was created
-    };
-  }
-
-  /**
-   * Get submission progress
-   */
-  async getSubmissionProgress(submissionId: string, studentId: string) {
-    const submission = await this.submissionRepo.findOne({
-      where: { id: submissionId, studentId },
-      relations: ['test', 'answers'],
-    });
-
-    if (!submission) {
-      throw new NotFoundException('Submission not found');
-    }
-
-    const totalQuestions = await this.questionRepo.count({
-      where: { testId: submission.testId },
-    });
-
-    const answeredQuestions = submission.answers.filter(
-      (a) => a.studentAnswer && a.studentAnswer.trim() !== '',
-    ).length;
-
-    const unansweredQuestions = await this.questionRepo
-      .createQueryBuilder('q')
-      .leftJoin(StudentAnswer, 'a', 'a.questionId = q.id AND a.submissionId = :submissionId', {
-        submissionId,
-      })
-      .where('q.testId = :testId', { testId: submission.testId })
-      .andWhere('(a.studentAnswer IS NULL OR a.studentAnswer = "")')
-      .select('q.questionNumber', 'questionNumber')
-      .orderBy('q.questionNumber', 'ASC')
-      .getRawMany();
-
-    return {
-      total: totalQuestions,
-      answered: answeredQuestions,
-      percentage: Math.round((answeredQuestions / totalQuestions) * 100),
-      unansweredQuestions: unansweredQuestions.map((q) => q.questionNumber),
     };
   }
 

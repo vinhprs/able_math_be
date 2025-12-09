@@ -1,14 +1,3 @@
-/**
- * SEED SCRIPT: A-DTM TEMPLATES
- *
- * Import all 23 A-DTM test templates into database
- * Run this script ONCE to populate the database
- *
- * Usage:
- * cd backend
- * ts-node scripts/seed-adtm-templates.ts
- */
-
 // Register tsconfig-paths to resolve @shared/* imports
 import 'tsconfig-paths/register';
 import * as dotenv from 'dotenv';

@@ -78,6 +78,32 @@ export class Test {
   @Column({ name: 'creator_id' })
   creatorId: string;
 
+  // ==========================================
+  // NEW FIELDS FOR ACHIEVEMENT TEST
+  // ==========================================
+
+  @Column({ name: 'test_number', nullable: true })
+  testNumber: string; // "01", "02", "03"
+
+  @Column({ name: 'total_questions', type: 'int', nullable: true })
+  totalQuestions: number;
+
+  // ✅ REQUIRED STATISTICS (NOT NULL)
+  @Column({
+    name: 'national_average',
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    default: 0,
+  })
+  nationalAverage: number; // ✅ REQUIRED
+
+  @Column({ name: 'max_score', type: 'int', default: 0 })
+  maxScore: number; // ✅ REQUIRED
+
+  @Column({ name: 'total_applicants', type: 'int', default: 0 })
+  totalApplicants: number; // ✅ REQUIRED
+
   // Relations
   @ManyToOne(() => User, (user) => user.createdTests)
   @JoinColumn({ name: 'creator_id' })
