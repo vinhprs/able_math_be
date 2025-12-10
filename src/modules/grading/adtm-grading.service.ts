@@ -113,17 +113,50 @@ export class AdtmGradingService {
         throw new BadRequestException(`Submission ${submissionId} has no answers to grade`);
       }
 
-      // 6. Get all questions from test for max scores
-      const questionIds = answers.map((a) => a.questionId);
-      const questions = await manager.find(TestQuestion, {
-        where: { id: In(questionIds) },
+      // Log answers by section for debugging
+      const answersBySectionCount = this.groupAnswersBySection(answers, new Map());
+      this.logger.debug(
+        `Answers by section: S1=${answersBySectionCount[1]?.length || 0}, S2=${answersBySectionCount[2]?.length || 0}, S3=${answersBySectionCount[3]?.length || 0}, S4=${answersBySectionCount[4]?.length || 0}, S5=${answersBySectionCount[5]?.length || 0}`,
+      );
+
+      // 6. Get all questions from test (not just from answers, to ensure we have all questions)
+      // First get all questions for the test
+      const allTestQuestions = await manager.find(TestQuestion, {
+        where: { testId: submission.testId },
       });
 
-      // Create question map for quick lookup
-      const questionMap = new Map(questions.map((q) => [q.id, q]));
+      // Also get questions from answers (in case some are missing)
+      const answerQuestionIds = answers.map((a) => a.questionId);
+      const answerQuestions = await manager.find(TestQuestion, {
+        where: { id: In(answerQuestionIds) },
+      });
+
+      // Combine and deduplicate
+      const questionMap = new Map<string, TestQuestion>();
+      allTestQuestions.forEach((q) => questionMap.set(q.id, q));
+      answerQuestions.forEach((q) => questionMap.set(q.id, q));
+
+      const questions = Array.from(questionMap.values());
 
       // 7. Group answers by section
       const answersBySection = this.groupAnswersBySection(answers, questionMap);
+
+      // Log answers by section for debugging
+      this.logger.debug(
+        `Answers by section after grouping: S1=${answersBySection[1]?.length || 0}, S2=${answersBySection[2]?.length || 0}, S3=${answersBySection[3]?.length || 0}, S4=${answersBySection[4]?.length || 0}, S5=${answersBySection[5]?.length || 0}`,
+      );
+
+      // Log section 4-5 answers details
+      if (answersBySection[4] && answersBySection[4].length > 0) {
+        this.logger.debug(
+          `Section 4 answers: ${JSON.stringify(answersBySection[4].map((a) => ({ questionId: a.questionId, score: a.score, maxScore: a.maxScore })))}`,
+        );
+      }
+      if (answersBySection[5] && answersBySection[5].length > 0) {
+        this.logger.debug(
+          `Section 5 answers: ${JSON.stringify(answersBySection[5].map((a) => ({ questionId: a.questionId, score: a.score, maxScore: a.maxScore })))}`,
+        );
+      }
 
       // 8. Grade Section 1
       // Parse currentMood - it's stored as string but should be number 1-5
@@ -172,23 +205,25 @@ export class AdtmGradingService {
           unitName: a.unitName!,
         }));
 
-      const section4Answers = (answersBySection[4] || [])
-        .filter((a) => a.unitName)
-        .map((a) => ({
-          questionId: a.questionId,
-          score: a.score,
-          maxScore: a.maxScore,
-          unitName: a.unitName!,
-        }));
+      // Sections 4-5 don't have units, so include all answers
+      const section4Answers = (answersBySection[4] || []).map((a) => ({
+        questionId: a.questionId,
+        score: a.score,
+        maxScore: a.maxScore,
+        unitName: a.unitName || 'No Unit', // Sections 4-5 don't have units, use placeholder
+      }));
 
-      const section5Answers = (answersBySection[5] || [])
-        .filter((a) => a.unitName)
-        .map((a) => ({
-          questionId: a.questionId,
-          score: a.score,
-          maxScore: a.maxScore,
-          unitName: a.unitName!,
-        }));
+      const section5Answers = (answersBySection[5] || []).map((a) => ({
+        questionId: a.questionId,
+        score: a.score,
+        maxScore: a.maxScore,
+        unitName: a.unitName || 'No Unit', // Sections 4-5 don't have units, use placeholder
+      }));
+
+      // Log section 4-5 processing
+      this.logger.debug(
+        `Processing Section 4: ${section4Answers.length} answers, Section 5: ${section5Answers.length} answers`,
+      );
 
       const section2 = this.calculateSectionWithUnits({
         sectionNumber: 2,
@@ -210,11 +245,22 @@ export class AdtmGradingService {
         answers: section5Answers,
       });
 
+      // Log section 4-5 results
+      this.logger.debug(
+        `Section 4 result: rawScore=${section4.rawScore}, standardScore=${section4.standardScore}, maxScore=${section4.maxScore}`,
+      );
+      this.logger.debug(
+        `Section 5 result: rawScore=${section5.rawScore}, standardScore=${section5.standardScore}, maxScore=${section5.maxScore}`,
+      );
+
       // 10. Calculate overall score
       const sections = [section1, section2, section3, section4, section5];
       const overallScore = this.calculateOverallScore(sections);
 
-      // 11. Update AdtmSubmission with results
+      // 11. Calculate domains
+      const domains = this.calculateDomainResults(section1, section2, section3, section4, section5);
+
+      // 12. Update AdtmSubmission with results
       const updateData: Partial<AdtmSubmission> = {
         // Section 1
         section1CorrectCount: section1.correctCount,
@@ -245,11 +291,21 @@ export class AdtmGradingService {
 
         // Overall
         overallStandardScore: overallScore,
+
+        // Domain 1: Basic Learning Ability
+        basicLearningAvg: domains.basicLearningAbility.averageScore,
+        basicLearningEval: domains.basicLearningAbility.evaluation,
+        basicLearningColor: domains.basicLearningAbility.evaluationColor,
+
+        // Domain 2: Creative Thinking Ability
+        creativeThinkingAvg: domains.creativeThinkingAbility.averageScore,
+        creativeThinkingEval: domains.creativeThinkingAbility.evaluation,
+        creativeThinkingColor: domains.creativeThinkingAbility.evaluationColor,
       };
 
       await manager.update(AdtmSubmission, { id: adtmData.id }, updateData);
 
-      // 12. Update submission status and scores
+      // 13. Update submission status and scores
       const totalRawScore = sections.reduce((sum, s) => sum + s.rawScore, 0);
       const totalMaxScore = sections.reduce((sum, s) => sum + s.maxScore, 0);
 
@@ -269,11 +325,13 @@ export class AdtmGradingService {
       );
 
       return {
+        submissionId,
         section1,
         section2,
         section3,
         section4,
         section5,
+        domains,
         overallStandardScore: overallScore,
         totalRawScore,
         totalMaxScore,
@@ -341,6 +399,7 @@ export class AdtmGradingService {
    */
   private calculateSectionWithUnits(input: SectionInput): SectionResult {
     if (!input.answers || input.answers.length === 0) {
+      this.logger.warn(`Section ${input.sectionNumber} has no answers to calculate`);
       return {
         sectionNumber: input.sectionNumber,
         rawScore: 0,
@@ -349,6 +408,11 @@ export class AdtmGradingService {
         unitScores: [],
       };
     }
+
+    // Log input for debugging
+    this.logger.debug(
+      `Calculating Section ${input.sectionNumber} with ${input.answers.length} answers`,
+    );
 
     // 1. Group answers by unit
     const unitGroups = this.groupByUnit(input.answers);
@@ -379,6 +443,11 @@ export class AdtmGradingService {
     const sectionStandardScore =
       sectionMaxScore > 0 ? (sectionRawScore / sectionMaxScore) * 100 : 0;
 
+    // Log result for debugging
+    this.logger.debug(
+      `Section ${input.sectionNumber} calculation: rawScore=${sectionRawScore}, maxScore=${sectionMaxScore}, standardScore=${sectionStandardScore}`,
+    );
+
     return {
       sectionNumber: input.sectionNumber,
       rawScore: sectionRawScore,
@@ -402,6 +471,75 @@ export class AdtmGradingService {
 
     const overallScore = (totalRawScore / totalMaxScore) * 100;
     return Math.round(overallScore * 100) / 100; // Round to 2 decimal places
+  }
+
+  /**
+   * Calculate domain-based results
+   * Domain 1: Basic Learning Ability (Sections 1-3)
+   * Domain 2: Creative Thinking Ability (Sections 4-5)
+   */
+  private calculateDomainResults(
+    section1: Section1Result,
+    section2: SectionResult,
+    section3: SectionResult,
+    section4: SectionResult,
+    section5: SectionResult,
+  ): import('./interfaces/adtm-grading.interface').DomainResults {
+    // Domain 1: Basic Learning Ability (Sections 1-3)
+    const basicLearningScores = [
+      section1.standardScore,
+      section2.standardScore,
+      section3.standardScore,
+    ];
+    const basicLearningAvg = basicLearningScores.reduce((sum, score) => sum + score, 0) / 3;
+    const basicLearningEval = this.getEvaluation(basicLearningAvg);
+
+    // Domain 2: Creative Thinking Ability (Sections 4-5)
+    const creativeThinkingScores = [section4.standardScore, section5.standardScore];
+    const creativeThinkingAvg = creativeThinkingScores.reduce((sum, score) => sum + score, 0) / 2;
+    const creativeThinkingEval = this.getEvaluation(creativeThinkingAvg);
+
+    return {
+      basicLearningAbility: {
+        sections: [section1, section2, section3],
+        averageScore: Math.round(basicLearningAvg * 100) / 100,
+        standardScore: Math.round(basicLearningAvg * 100) / 100,
+        evaluation: basicLearningEval,
+        evaluationColor: this.getEvaluationColor(basicLearningEval),
+      },
+      creativeThinkingAbility: {
+        sections: [section4, section5],
+        averageScore: Math.round(creativeThinkingAvg * 100) / 100,
+        standardScore: Math.round(creativeThinkingAvg * 100) / 100,
+        evaluation: creativeThinkingEval,
+        evaluationColor: this.getEvaluationColor(creativeThinkingEval),
+      },
+    };
+  }
+
+  /**
+   * Get evaluation level based on score
+   * @param score - Standard score (0-100)
+   * @returns Evaluation level
+   */
+  private getEvaluation(score: number): 'high' | 'medium' | 'low' {
+    if (score >= 80) return 'high';
+    if (score >= 60) return 'medium';
+    return 'low';
+  }
+
+  /**
+   * Get color code for evaluation level
+   * @param evaluation - Evaluation level
+   * @returns Hex color code
+   */
+  private getEvaluationColor(evaluation: 'high' | 'medium' | 'low'): string {
+    const colors = {
+      high: '#10B981', // Green
+      medium: '#F59E0B', // Orange
+      low: '#EF4444', // Red
+    };
+    return colors[evaluation];
   }
 
   /**
@@ -850,7 +988,82 @@ export class AdtmGradingService {
         },
       );
 
-      // 7. Update submission status
+      // 7. Recalculate domain data and check completion (Section 1 is part of Domain 1)
+      const updatedAdtmData = await manager.findOne(AdtmSubmission, {
+        where: { id: adtmData.id },
+      });
+
+      if (updatedAdtmData) {
+        const section1Score = updatedAdtmData.section1StandardScore || 0;
+        const section2Score = updatedAdtmData.section2StandardScore || 0;
+        const section3Score = updatedAdtmData.section3StandardScore || 0;
+        const section4Score = updatedAdtmData.section4StandardScore || 0;
+        const section5Score = updatedAdtmData.section5StandardScore || 0;
+
+        // Calculate Domain 1: Basic Learning Ability (Sections 1-3)
+        const domain1Scores = [section1Score, section2Score, section3Score].filter(
+          (score) => score > 0,
+        );
+        if (domain1Scores.length > 0) {
+          const basicLearningAvg =
+            domain1Scores.reduce((sum, score) => sum + score, 0) / domain1Scores.length;
+          const basicLearningEval = this.getEvaluation(basicLearningAvg);
+
+          await manager.update(
+            AdtmSubmission,
+            { id: adtmData.id },
+            {
+              basicLearningAvg: Math.round(basicLearningAvg * 100) / 100,
+              basicLearningEval,
+              basicLearningColor: this.getEvaluationColor(basicLearningEval),
+            },
+          );
+        }
+
+        // Calculate Domain 2: Creative Thinking Ability (Sections 4-5)
+        const domain2Scores = [section4Score, section5Score].filter((score) => score > 0);
+        if (domain2Scores.length > 0) {
+          const creativeThinkingAvg =
+            domain2Scores.reduce((sum, score) => sum + score, 0) / domain2Scores.length;
+          const creativeThinkingEval = this.getEvaluation(creativeThinkingAvg);
+
+          await manager.update(
+            AdtmSubmission,
+            { id: adtmData.id },
+            {
+              creativeThinkingAvg: Math.round(creativeThinkingAvg * 100) / 100,
+              creativeThinkingEval,
+              creativeThinkingColor: this.getEvaluationColor(creativeThinkingEval),
+            },
+          );
+        }
+
+        // Check if all domains are complete
+        const domain1Complete = section1Score > 0 && section2Score > 0 && section3Score > 0;
+        const domain2Complete = section4Score > 0 && section5Score > 0;
+        const allDomainsComplete = domain1Complete && domain2Complete;
+
+        // 8. Update submission status
+        await manager.update(
+          StudentSubmission,
+          { id: submission.id },
+          { status: SubmissionStatus.IN_PROGRESS },
+        );
+
+        // Return result with completion status (controller will handle auto-finalization)
+        return {
+          section1: section1Result,
+          message: allDomainsComplete
+            ? 'Section 1 grades updated successfully. All domains complete - grading will be finalized automatically.'
+            : 'Section 1 grades updated successfully',
+          domain1Complete,
+          domain2Complete,
+          allDomainsComplete,
+          autoFinalized: false, // Will be handled by controller
+        };
+      }
+
+      // 8. Update submission status (fallback)
       await manager.update(
         StudentSubmission,
         { id: submission.id },
@@ -860,6 +1073,7 @@ export class AdtmGradingService {
       return {
         section1: section1Result,
         message: 'Section 1 grades updated successfully',
+        autoFinalized: false,
       };
     });
   }
@@ -956,6 +1170,11 @@ export class AdtmGradingService {
 
       const sectionResult = this.calculateSectionWithUnits(sectionInput);
 
+      // Log section result for debugging
+      this.logger.debug(
+        `Section ${sectionNumber} calculation result: rawScore=${sectionResult.rawScore}, standardScore=${sectionResult.standardScore}, maxScore=${sectionResult.maxScore}, unitScores count=${sectionResult.unitScores.length}`,
+      );
+
       // 6. Update AdtmSubmission
       const updateData: Partial<AdtmSubmission> = {};
 
@@ -979,7 +1198,105 @@ export class AdtmGradingService {
 
       await manager.update(AdtmSubmission, { id: adtmData.id }, updateData);
 
-      // 7. Update submission status
+      // 7. If sections 2-5 are updated, recalculate domain data
+      // (Sections 2-3 affect Domain 1, Sections 4-5 affect Domain 2)
+      if (sectionNumber >= 2 && sectionNumber <= 5) {
+        // Reload adtmData to get all section scores
+        const updatedAdtmData = await manager.findOne(AdtmSubmission, {
+          where: { id: adtmData.id },
+        });
+
+        if (updatedAdtmData) {
+          // Get all section scores for domain calculation
+          const section1Score = updatedAdtmData.section1StandardScore || 0;
+          const section2Score = updatedAdtmData.section2StandardScore || 0;
+          const section3Score = updatedAdtmData.section3StandardScore || 0;
+          const section4Score = updatedAdtmData.section4StandardScore || 0;
+          const section5Score = updatedAdtmData.section5StandardScore || 0;
+
+          // Calculate Domain 1: Basic Learning Ability (Sections 1-3)
+          // Calculate average of sections that have scores > 0
+          const domain1Scores = [section1Score, section2Score, section3Score].filter(
+            (score) => score > 0,
+          );
+          if (domain1Scores.length > 0) {
+            const basicLearningAvg =
+              domain1Scores.reduce((sum, score) => sum + score, 0) / domain1Scores.length;
+            const basicLearningEval = this.getEvaluation(basicLearningAvg);
+
+            await manager.update(
+              AdtmSubmission,
+              { id: adtmData.id },
+              {
+                basicLearningAvg: Math.round(basicLearningAvg * 100) / 100,
+                basicLearningEval,
+                basicLearningColor: this.getEvaluationColor(basicLearningEval),
+              },
+            );
+          }
+
+          // Calculate Domain 2: Creative Thinking Ability (Sections 4-5)
+          // Calculate average of sections that have scores > 0
+          const domain2Scores = [section4Score, section5Score].filter((score) => score > 0);
+          if (domain2Scores.length > 0) {
+            const creativeThinkingAvg =
+              domain2Scores.reduce((sum, score) => sum + score, 0) / domain2Scores.length;
+            const creativeThinkingEval = this.getEvaluation(creativeThinkingAvg);
+
+            await manager.update(
+              AdtmSubmission,
+              { id: adtmData.id },
+              {
+                creativeThinkingAvg: Math.round(creativeThinkingAvg * 100) / 100,
+                creativeThinkingEval,
+                creativeThinkingColor: this.getEvaluationColor(creativeThinkingEval),
+              },
+            );
+          }
+
+          // Check if domains are complete
+          // Domain 1 (Basic Learning Ability): Sections 1-3
+          const domain1Complete = section1Score > 0 && section2Score > 0 && section3Score > 0;
+
+          // Domain 2 (Creative Thinking Ability): Sections 4-5
+          const domain2Complete = section4Score > 0 && section5Score > 0;
+
+          if (domain1Complete) {
+            this.logger.log(
+              `Domain 1 (Basic Learning Ability) complete for submission ${submission.id}`,
+            );
+          }
+          if (domain2Complete) {
+            this.logger.log(
+              `Domain 2 (Creative Thinking Ability) complete for submission ${submission.id}`,
+            );
+          }
+
+          // Store completion status to return
+          const allDomainsComplete = domain1Complete && domain2Complete;
+
+          // 8. Update submission status
+          await manager.update(
+            StudentSubmission,
+            { id: submission.id },
+            { status: SubmissionStatus.IN_PROGRESS },
+          );
+
+          // Return result with completion status (controller will handle auto-finalization)
+          return {
+            [`section${sectionNumber}`]: sectionResult,
+            message: allDomainsComplete
+              ? `Section ${sectionNumber} grades updated successfully. All domains complete - grading will be finalized automatically.`
+              : `Section ${sectionNumber} grades updated successfully`,
+            domain1Complete,
+            domain2Complete,
+            allDomainsComplete,
+            autoFinalized: false, // Will be handled by controller
+          };
+        }
+      }
+
+      // 8. Update submission status (if domain calculation didn't run)
       await manager.update(
         StudentSubmission,
         { id: submission.id },
@@ -989,6 +1306,7 @@ export class AdtmGradingService {
       return {
         [`section${sectionNumber}`]: sectionResult,
         message: `Section ${sectionNumber} grades updated successfully`,
+        autoFinalized: false,
       };
     });
   }

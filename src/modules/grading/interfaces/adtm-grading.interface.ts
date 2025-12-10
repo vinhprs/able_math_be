@@ -72,14 +72,38 @@ export interface SectionResult {
 }
 
 /**
+ * Domain results for A-DTM
+ * Domain 1: Basic Learning Ability (Sections 1-3)
+ * Domain 2: Creative Thinking Ability (Sections 4-5)
+ */
+export interface DomainResults {
+  basicLearningAbility: {
+    sections: [Section1Result, SectionResult, SectionResult];
+    averageScore: number;
+    standardScore: number;
+    evaluation: 'high' | 'medium' | 'low';
+    evaluationColor: string;
+  };
+  creativeThinkingAbility: {
+    sections: [SectionResult, SectionResult];
+    averageScore: number;
+    standardScore: number;
+    evaluation: 'high' | 'medium' | 'low';
+    evaluationColor: string;
+  };
+}
+
+/**
  * Complete A-DTM grading result
  */
 export interface AdtmGradingResult {
+  submissionId?: string;
   section1: Section1Result;
   section2: SectionResult;
   section3: SectionResult;
   section4: SectionResult;
   section5: SectionResult;
+  domains: DomainResults;
   overallStandardScore: number;
   totalRawScore: number;
   totalMaxScore: number;

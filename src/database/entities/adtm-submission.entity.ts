@@ -96,6 +96,32 @@ export class AdtmSubmission {
   @Column({ name: 'overall_standard_score', type: 'float', nullable: true })
   overallStandardScore: number;
 
+  // Domain 1: Basic Learning Ability (Sections 1-3)
+  @Column({ name: 'basic_learning_avg', type: 'decimal', precision: 5, scale: 2, nullable: true })
+  basicLearningAvg: number;
+
+  @Column({ name: 'basic_learning_eval', type: 'varchar', length: 20, nullable: true })
+  basicLearningEval: string; // 'high', 'medium', 'low'
+
+  @Column({ name: 'basic_learning_color', type: 'varchar', length: 7, nullable: true })
+  basicLearningColor: string; // '#10B981', '#F59E0B', '#EF4444'
+
+  // Domain 2: Creative Thinking Ability (Sections 4-5)
+  @Column({
+    name: 'creative_thinking_avg',
+    type: 'decimal',
+    precision: 5,
+    scale: 2,
+    nullable: true,
+  })
+  creativeThinkingAvg: number;
+
+  @Column({ name: 'creative_thinking_eval', type: 'varchar', length: 20, nullable: true })
+  creativeThinkingEval: string;
+
+  @Column({ name: 'creative_thinking_color', type: 'varchar', length: 7, nullable: true })
+  creativeThinkingColor: string;
+
   // Relations
   @OneToOne(() => StudentSubmission, (submission) => submission.adtmData, {
     onDelete: 'CASCADE',

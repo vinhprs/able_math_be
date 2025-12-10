@@ -7,6 +7,7 @@ import { AdtmController } from './adtm.controller';
 import { TeacherAdtmController } from './teacher-adtm.controller';
 import { TestsModule } from '../tests/tests.module';
 import { StudentsModule } from '../students/students.module';
+import { ReportsModule } from '../reports/reports.module';
 import { TestQuestion } from '../../database/entities/test-question.entity';
 import { StudentAnswer } from '../../database/entities/student-answer.entity';
 import { StudentSubmission } from '../../database/entities/student-submission.entity';
@@ -28,6 +29,7 @@ import { StudentAssignment } from '../../database/entities/student-assignment.en
     ]),
     forwardRef(() => TestsModule),
     forwardRef(() => StudentsModule),
+    forwardRef(() => ReportsModule),
   ],
   controllers: [AdtmController, TeacherAdtmController],
   providers: [GradingService, AchievementGradingService, AdtmGradingService],

@@ -91,6 +91,26 @@ export interface AdtmSectionData {
 }
 
 /**
+ * Domain data for A-DTM report
+ */
+export interface AdtmDomainData {
+  basicLearningAbility: {
+    averageScore: number;
+    standardScore: number;
+    evaluation: 'high' | 'medium' | 'low';
+    evaluationColor: string;
+    sections: AdtmSectionData[]; // Sections 1-3
+  };
+  creativeThinkingAbility: {
+    averageScore: number;
+    standardScore: number;
+    evaluation: 'high' | 'medium' | 'low';
+    evaluationColor: string;
+    sections: AdtmSectionData[]; // Sections 4-5
+  };
+}
+
+/**
  * A-DTM Test Report Data
  */
 export interface AdtmReportData {
@@ -106,6 +126,7 @@ export interface AdtmReportData {
   };
   overallScore: number;
   sections: AdtmSectionData[];
+  domains: AdtmDomainData;
   charts: {
     sectionBar: ChartData;
     unitRadar: ChartData;

@@ -4,6 +4,8 @@ import {
   NotFoundException,
   BadRequestException,
   ForbiddenException,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -36,6 +38,7 @@ export class ReportsService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly achievementGradingService: AchievementGradingService,
+    @Inject(forwardRef(() => AdtmGradingService))
     private readonly adtmGradingService: AdtmGradingService,
     private readonly pdfGeneratorService: PdfGeneratorService,
   ) {}
@@ -164,11 +167,48 @@ export class ReportsService {
       adtmData = reloaded.adtmData;
     }
 
+    // Ensure domain data is calculated (re-grade if missing)
+    if (
+      adtmData.basicLearningAvg === null ||
+      adtmData.basicLearningAvg === undefined ||
+      adtmData.creativeThinkingAvg === null ||
+      adtmData.creativeThinkingAvg === undefined
+    ) {
+      this.logger.warn(`Submission ${submissionId} has missing domain data. Re-calculating...`);
+      await this.adtmGradingService.gradeAdtmSubmission(submissionId);
+      // Reload submission to get updated domain data
+      const reloaded = await this.submissionRepository.findOne({
+        where: { id: submissionId },
+        relations: ['student', 'test', 'adtmData'],
+      });
+      if (reloaded?.adtmData) {
+        adtmData = reloaded.adtmData;
+      }
+    }
+
     // Build sections data with difficulty breakdown
     const sections = await this.buildAdtmSections(adtmData, submission);
 
     // Generate recommendations
     const recommendations = this.generateRecommendations(adtmData, sections);
+
+    // Build domain data
+    const domains: AdtmReportData['domains'] = {
+      basicLearningAbility: {
+        averageScore: adtmData.basicLearningAvg || 0,
+        standardScore: adtmData.basicLearningAvg || 0,
+        evaluation: (adtmData.basicLearningEval as 'high' | 'medium' | 'low') || 'low',
+        evaluationColor: adtmData.basicLearningColor || '#EF4444',
+        sections: sections.slice(0, 3), // Sections 1-3
+      },
+      creativeThinkingAbility: {
+        averageScore: adtmData.creativeThinkingAvg || 0,
+        standardScore: adtmData.creativeThinkingAvg || 0,
+        evaluation: (adtmData.creativeThinkingEval as 'high' | 'medium' | 'low') || 'low',
+        evaluationColor: adtmData.creativeThinkingColor || '#EF4444',
+        sections: sections.slice(3, 5), // Sections 4-5
+      },
+    };
 
     // Build report data
     const reportData: AdtmReportData = {
@@ -184,6 +224,7 @@ export class ReportsService {
       },
       overallScore: adtmData.overallStandardScore || 0,
       sections,
+      domains,
       charts: {
         sectionBar: this.generateSectionBarChart(sections),
         unitRadar: this.generateUnitRadarChart(sections),
@@ -618,28 +659,36 @@ export class ReportsService {
     const sectionNames = [
       'Calculation Ability',
       'Conceptual Understanding',
-      'Problem Solving',
-      'Application',
-      'Analysis',
+      'Conceptual Application',
+      'Reasoning Ability',
+      'Problem-Solving Ability',
     ];
 
     // Get questions and answers for difficulty breakdown
     const questions = submission.test?.questions || [];
     const answers = submission.answers || [];
 
+    // Helper function to calculate maxScore from questions for a section
+    const calculateSectionMaxScore = (sectionNumber: number): number => {
+      const sectionQuestions = questions.filter((q) => q.sectionNumber === sectionNumber);
+      return sectionQuestions.reduce((sum, q) => sum + (q.score || 0), 0);
+    };
+
     // Calculate difficulty breakdown for Section 1
     const section1DifficultyBreakdown = this.calculateDifficultyBreakdown(1, questions, answers);
+
+    const section1MaxScore = calculateSectionMaxScore(1);
 
     const sections: AdtmReportData['sections'] = [
       {
         number: 1,
         name: sectionNames[0],
-        standardScore: adtmData.section1StandardScore,
-        rawScore: adtmData.section1RawScore,
-        maxScore: 20, // Section 1 has 20 questions
-        correctCount: adtmData.section1CorrectCount,
-        mistakeCount: adtmData.section1MistakeCount,
-        unsolvedCount: adtmData.section1UnsolvedCount,
+        standardScore: adtmData.section1StandardScore || 0,
+        rawScore: adtmData.section1RawScore || 0,
+        maxScore: section1MaxScore || 100, // Calculate from actual questions
+        correctCount: adtmData.section1CorrectCount || 0,
+        mistakeCount: adtmData.section1MistakeCount || 0,
+        unsolvedCount: adtmData.section1UnsolvedCount || 0,
         difficultyBreakdown: section1DifficultyBreakdown,
       },
     ];
@@ -649,38 +698,48 @@ export class ReportsService {
       {
         number: 2,
         unitScores: adtmData.section2UnitScores,
-        rawScore: adtmData.section2RawScore,
-        standardScore: adtmData.section2StandardScore,
+        rawScore: adtmData.section2RawScore || 0,
+        standardScore: adtmData.section2StandardScore || 0,
+        maxScore: calculateSectionMaxScore(2) || 100, // Calculate from actual questions
+        hasUnits: true,
       },
       {
         number: 3,
         unitScores: adtmData.section3UnitScores,
-        rawScore: adtmData.section3RawScore,
-        standardScore: adtmData.section3StandardScore,
+        rawScore: adtmData.section3RawScore || 0,
+        standardScore: adtmData.section3StandardScore || 0,
+        maxScore: calculateSectionMaxScore(3) || 100, // Calculate from actual questions
+        hasUnits: true,
       },
       {
         number: 4,
         unitScores: adtmData.section4UnitScores,
-        rawScore: adtmData.section4RawScore,
-        standardScore: adtmData.section4StandardScore,
+        rawScore: adtmData.section4RawScore || 0,
+        standardScore: adtmData.section4StandardScore || 0,
+        maxScore: calculateSectionMaxScore(4) || 40, // Calculate from actual questions
+        hasUnits: false,
       },
       {
         number: 5,
         unitScores: adtmData.section5UnitScores,
-        rawScore: adtmData.section5RawScore,
-        standardScore: adtmData.section5StandardScore,
+        rawScore: adtmData.section5RawScore || 0,
+        standardScore: adtmData.section5StandardScore || 0,
+        maxScore: calculateSectionMaxScore(5) || 40, // Calculate from actual questions
+        hasUnits: false,
       },
     ];
 
     for (const data of sectionData) {
-      const unitScores = data.unitScores
-        ? Object.entries(data.unitScores).map(([unitName, scores]) => ({
-            unitName,
-            rawScore: scores.rawScore,
-            maxScore: scores.maxScore,
-            standardScore: scores.maxScore > 0 ? (scores.rawScore / scores.maxScore) * 100 : 0,
-          }))
-        : [];
+      // Only process unitScores for sections 2-3 (which have units)
+      const unitScores =
+        data.hasUnits && data.unitScores
+          ? Object.entries(data.unitScores).map(([unitName, scores]) => ({
+              unitName,
+              rawScore: scores.rawScore,
+              maxScore: scores.maxScore,
+              standardScore: scores.maxScore > 0 ? (scores.rawScore / scores.maxScore) * 100 : 0,
+            }))
+          : undefined; // Sections 4-5 don't have units
 
       // Calculate difficulty breakdown for sections 2 and 3 only
       let difficultyBreakdown:
@@ -695,7 +754,7 @@ export class ReportsService {
         name: sectionNames[data.number - 1],
         standardScore: data.standardScore,
         rawScore: data.rawScore,
-        maxScore: 15, // Sections 2-5 have 15 questions each
+        maxScore: data.maxScore,
         unitScores,
         difficultyBreakdown,
       });
