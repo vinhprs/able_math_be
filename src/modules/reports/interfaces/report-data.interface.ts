@@ -25,6 +25,9 @@ export interface QuestionResult {
   isCorrect: boolean;
   scoreEarned: number;
   maxScore: number;
+  correctAnswer: string;
+  enteredValue: string;
+  questionType: string; // 'Multiple choice' or 'Subjective'
 }
 
 /**
@@ -41,6 +44,12 @@ export interface AchievementReportData {
     code: string;
     testDate: Date;
     grade: string;
+    semester?: string;
+    level?: number;
+    examType?: string;
+    nationalAverage?: number;
+    maxScore?: number;
+    totalApplicants?: number;
   };
   scores: {
     totalRaw: number;

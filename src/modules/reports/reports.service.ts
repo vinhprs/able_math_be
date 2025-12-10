@@ -23,6 +23,7 @@ import {
   ChartData,
 } from './interfaces/report-data.interface';
 import { PdfGeneratorService } from './pdf-generator.service';
+import { UNIT_NAMES } from '../../../scripts/constants/unit-names';
 
 @Injectable()
 export class ReportsService {
@@ -84,6 +85,15 @@ export class ReportsService {
     // Get grading result
     const gradingResult = await this.achievementGradingService.gradeSubmission(submissionId);
 
+    // Map unit names to include English names
+    const unitScoresWithEnglish = gradingResult.unitScores.map((unit) => {
+      const englishName = this.getEnglishUnitName(unit.unitName);
+      return {
+        ...unit,
+        unitNameEnglish: englishName,
+      };
+    });
+
     // Build report data
     const reportData: AchievementReportData = {
       student: {
@@ -96,6 +106,12 @@ export class ReportsService {
         code: submission.test.testCode,
         testDate: submission.submittedAt || submission.createdAt,
         grade: submission.test.grade,
+        semester: submission.test.semester,
+        level: submission.test.level,
+        examType: submission.test.examType,
+        nationalAverage: submission.test.nationalAverage || 0,
+        maxScore: submission.test.maxScore || 0,
+        totalApplicants: submission.test.totalApplicants || 0,
       },
       scores: {
         totalRaw: gradingResult.totalRawScore,
@@ -105,11 +121,11 @@ export class ReportsService {
         incorrectCount: gradingResult.incorrectCount,
         accuracy: gradingResult.accuracy,
       },
-      unitScores: gradingResult.unitScores,
+      unitScores: unitScoresWithEnglish,
       difficultyScores: gradingResult.difficultyScores,
       questionBreakdown: this.buildQuestionBreakdown(submission),
       charts: {
-        unitBar: this.generateUnitBarChart(gradingResult.unitScores),
+        unitBar: this.generateUnitBarChart(unitScoresWithEnglish),
         difficultyPie: this.generateDifficultyPieChart(
           gradingResult.difficultyScores.map((ds) => ({
             difficulty: this.mapDifficultyToString(ds.difficulty),
@@ -550,6 +566,27 @@ export class ReportsService {
   }
 
   /**
+   * Get English unit name from Korean unit name
+   * Tries to match Korean name in UNIT_NAMES mapping
+   */
+  private getEnglishUnitName(koreanName: string): string {
+    // Remove leading numbers and dots (e.g., "1. " or "1. 1.")
+    const cleanKoreanName = koreanName.replace(/^\d+\.\s*\d*\.?\s*/, '').trim();
+
+    // Search through UNIT_NAMES to find matching Korean name
+    for (const [unitId, unitInfo] of Object.entries(UNIT_NAMES)) {
+      const cleanUnitKorean = unitInfo.korean.replace(/^\d+\.\s*/, '').trim();
+      if (cleanUnitKorean === cleanKoreanName || unitInfo.korean.includes(cleanKoreanName)) {
+        // Return English name without the leading number
+        return unitInfo.english.replace(/^\d+\.\s*/, '').trim();
+      }
+    }
+
+    // If no match found, return the original name (fallback)
+    return cleanKoreanName;
+  }
+
+  /**
    * Build question breakdown for Achievement report
    */
   private buildQuestionBreakdown(submission: StudentSubmission) {
@@ -561,6 +598,9 @@ export class ReportsService {
       .filter((answer) => answer.question)
       .map((answer) => {
         const difficultyNum = answer.question.difficulty || 2; // Default to 2 (Medium)
+        // Determine question type based on answerType
+        const questionType =
+          answer.question.answerType === 'MULTIPLE_CHOICE' ? 'Multiple choice' : 'Subjective';
         return {
           questionNumber: answer.question.questionNumber,
           unitName: answer.question.unitName || 'Unknown',
@@ -568,6 +608,9 @@ export class ReportsService {
           isCorrect: answer.isCorrect || false,
           scoreEarned: answer.scoreEarned || 0,
           maxScore: answer.question.score,
+          correctAnswer: answer.question.correctAnswer || '',
+          enteredValue: answer.studentAnswer || '',
+          questionType,
         };
       })
       .sort((a, b) => a.questionNumber - b.questionNumber);
