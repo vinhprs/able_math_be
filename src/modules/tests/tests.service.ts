@@ -38,6 +38,72 @@ export class TestsService {
   ) {}
 
   /**
+   * Validate question data based on question type
+   * @param question - Question DTO to validate
+   * @throws BadRequestException if validation fails
+   */
+  private validateQuestionData(question: CreateQuestionDto): void {
+    if (question.questionType === 'MULTIPLE_CHOICE') {
+      // Ensure options are provided
+      if (!question.options || Object.keys(question.options).length < 2) {
+        throw new BadRequestException(
+          `Question ${question.questionNumber}: Multiple choice must have at least 2 options`,
+        );
+      }
+
+      // Ensure correct answer exists in options
+      if (!question.options[question.correctAnswer as keyof typeof question.options]) {
+        throw new BadRequestException(
+          `Question ${question.questionNumber}: Correct answer '${question.correctAnswer}' not found in options`,
+        );
+      }
+
+      // Ensure correct answer format
+      if (!['A', 'B', 'C', 'D', 'E'].includes(question.correctAnswer)) {
+        throw new BadRequestException(
+          `Question ${question.questionNumber}: Invalid correct answer format for multiple choice`,
+        );
+      }
+    }
+  }
+
+  /**
+   * Validate total score equals target
+   * @param questions - Array of questions with scores
+   * @param targetScore - Expected total (default: 100)
+   * @throws BadRequestException if total doesn't match
+   */
+  private validateTotalScore(questions: CreateQuestionDto[], targetScore: number = 100): void {
+    if (!questions || questions.length === 0) {
+      return; // Skip validation if no questions provided
+    }
+
+    const totalScore = questions.reduce((sum, q) => sum + (Number(q.score) || 0), 0);
+
+    if (Math.abs(totalScore - targetScore) >= 0.01) {
+      const difference = totalScore - targetScore;
+      const message =
+        `Total score must equal ${targetScore}. ` +
+        `Current total: ${totalScore.toFixed(2)}. ` +
+        `Difference: ${difference > 0 ? '+' : ''}${difference.toFixed(2)}`;
+
+      throw new BadRequestException({
+        message,
+        details: {
+          field: 'questions',
+          totalScore: Number(totalScore.toFixed(2)),
+          targetScore,
+          difference: Number(difference.toFixed(2)),
+          questionScores: questions.map((q) => ({
+            questionNumber: q.questionNumber,
+            score: q.score,
+          })),
+        },
+      });
+    }
+  }
+
+  /**
    * Generate test code based on test details
    * Format: {GRADE}_T{TERM}_L{LEVEL}_{VERSION}
    * Example: E4_T1_L1_01
@@ -84,6 +150,13 @@ export class TestsService {
     // Extract questions from DTO
     const { questions, ...testData } = createTestDto;
 
+    // Validate total score for Achievement Tests
+    if (questions && questions.length > 0) {
+      this.validateTotalScore(questions);
+      // Validate each question's data
+      questions.forEach((q) => this.validateQuestionData(q));
+    }
+
     // Create test
     const test = this.testRepository.create({
       ...testData,
@@ -123,6 +196,8 @@ export class TestsService {
           difficulty: q.difficulty,
           questionText: q.questionText || '',
           questionImage: q.questionImage,
+          questionType: q.questionType || 'TEXT',
+          options: q.questionType === 'MULTIPLE_CHOICE' ? q.options : null,
           sectionNumber: 1, // Default to 1 for Achievement Tests
           testId: savedTest.id,
         };
@@ -275,6 +350,16 @@ export class TestsService {
       throw new ForbiddenException('Cannot update published test');
     }
 
+    // Validate total score if questions are being updated
+    if (updateTestDto.questions && updateTestDto.questions.length > 0) {
+      // Only validate for Achievement Tests
+      if (test.testType === TestType.ACHIEVEMENT) {
+        this.validateTotalScore(updateTestDto.questions);
+        // Validate each question's data
+        updateTestDto.questions.forEach((q) => this.validateQuestionData(q));
+      }
+    }
+
     // If grade, term, or level changes, regenerate test code
     if (updateTestDto.grade || updateTestDto.term || updateTestDto.level) {
       const grade = updateTestDto.grade || test.grade;
@@ -366,6 +451,9 @@ export class TestsService {
       );
     }
 
+    // Validate question data
+    this.validateQuestionData(createQuestionDto);
+
     // Create question (default sectionNumber to 1 for Achievement Tests)
     // Use insert to directly insert without relation handling issues
     const question = this.questionRepository.create({
@@ -376,6 +464,9 @@ export class TestsService {
       difficulty: createQuestionDto.difficulty,
       questionText: createQuestionDto.questionText || '',
       questionImage: createQuestionDto.questionImage,
+      questionType: createQuestionDto.questionType || 'TEXT',
+      options:
+        createQuestionDto.questionType === 'MULTIPLE_CHOICE' ? createQuestionDto.options : null,
       sectionNumber: 1,
       test,
     });
@@ -423,6 +514,20 @@ export class TestsService {
       throw new NotFoundException(`Question with ID ${questionId} not found in test ${testId}`);
     }
 
+    // Validate question data if being updated
+    if (updateData.questionType || updateData.options || updateData.correctAnswer) {
+      const questionDataToValidate: CreateQuestionDto = {
+        questionNumber: question.questionNumber,
+        unitName: question.unitName || '',
+        correctAnswer: updateData.correctAnswer || question.correctAnswer,
+        score: question.score,
+        difficulty: question.difficulty || 1,
+        questionType: updateData.questionType || question.questionType || 'TEXT',
+        options: updateData.options || question.options || undefined,
+      };
+      this.validateQuestionData(questionDataToValidate);
+    }
+
     // If question number is being changed, validate it doesn't conflict
     if (updateData.questionNumber && updateData.questionNumber !== question.questionNumber) {
       const existingQuestion = test.questions?.find(
@@ -436,8 +541,44 @@ export class TestsService {
     // Update score difference
     if (updateData.score && updateData.score !== question.score) {
       const scoreDiff = updateData.score - question.score;
-      test.totalScore = (test.totalScore || 0) + scoreDiff;
+      const newTotalScore = (test.totalScore || 0) + scoreDiff;
+
+      // Validate total score for Achievement Tests
+      if (test.testType === TestType.ACHIEVEMENT) {
+        // Calculate what the total would be with the updated score
+        const targetScore = 100;
+        if (Math.abs(newTotalScore - targetScore) >= 0.01) {
+          const difference = newTotalScore - targetScore;
+          const message =
+            `Total score must equal ${targetScore}. ` +
+            `Current total would be: ${newTotalScore.toFixed(2)}. ` +
+            `Difference: ${difference > 0 ? '+' : ''}${difference.toFixed(2)}`;
+
+          throw new BadRequestException({
+            message,
+            details: {
+              field: 'questions',
+              totalScore: Number(newTotalScore.toFixed(2)),
+              targetScore,
+              difference: Number(difference.toFixed(2)),
+            },
+          });
+        }
+      }
+
+      test.totalScore = newTotalScore;
       await this.testRepository.save(test);
+    }
+
+    // Handle options based on questionType
+    if (updateData.questionType !== undefined) {
+      // If changing to non-multiple choice, clear options
+      if (updateData.questionType !== 'MULTIPLE_CHOICE') {
+        updateData.options = null;
+      }
+    } else if (question.questionType !== 'MULTIPLE_CHOICE' && updateData.options) {
+      // If current type is not multiple choice but options are being set, clear them
+      updateData.options = null;
     }
 
     Object.assign(question, updateData);
@@ -498,6 +639,18 @@ export class TestsService {
     // Validate test has questions
     if (!test.questions || test.questions.length === 0) {
       throw new BadRequestException('Cannot publish test without questions');
+    }
+
+    // Validate total score equals 100 for Achievement Tests
+    if (test.testType === TestType.ACHIEVEMENT) {
+      const questionsForValidation: CreateQuestionDto[] = test.questions.map((q) => ({
+        questionNumber: q.questionNumber,
+        unitName: q.unitName || '',
+        correctAnswer: q.correctAnswer,
+        score: q.score,
+        difficulty: q.difficulty || 1,
+      }));
+      this.validateTotalScore(questionsForValidation);
     }
 
     test.status = TestStatus.PUBLISHED;

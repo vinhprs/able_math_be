@@ -101,6 +101,8 @@ export class ResultsService {
         questionNumber: question.questionNumber,
         questionText: question.questionText,
         questionImage: question.questionImage,
+        questionType: question.questionType || 'TEXT',
+        options: question.questionType === 'MULTIPLE_CHOICE' ? question.options : null,
         unitName: question.unitName,
         maxScore: question.score,
         difficulty: question.difficulty,

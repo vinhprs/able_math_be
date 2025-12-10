@@ -27,4 +27,3 @@ export class CreateClassDto {
   @IsOptional()
   isActive?: boolean;
 }
-

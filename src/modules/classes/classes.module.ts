@@ -12,4 +12,3 @@ import { User } from '../../database/entities/user.entity';
   exports: [ClassesService],
 })
 export class ClassesModule {}
-

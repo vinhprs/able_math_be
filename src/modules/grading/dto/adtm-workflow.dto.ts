@@ -72,4 +72,3 @@ export class GradeSectionDto {
   @Type(() => QuestionScoreDto)
   answers: QuestionScoreDto[];
 }
-

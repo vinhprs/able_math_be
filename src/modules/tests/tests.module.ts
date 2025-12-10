@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TestsService } from './tests.service';
 import { TeacherTestsController } from './teacher-tests.controller';
 import { AdminAdtmTemplatesController } from './admin-adtm-templates.controller';
+import { AdminAchievementTestsController } from './admin-achievement-tests.controller';
 import { Test } from '../../database/entities/test.entity';
 import { TestQuestion } from '../../database/entities/test-question.entity';
 import { StudentSubmission } from '../../database/entities/student-submission.entity';
@@ -10,7 +11,11 @@ import { StudentAssignment } from '../../database/entities/student-assignment.en
 
 @Module({
   imports: [TypeOrmModule.forFeature([Test, TestQuestion, StudentSubmission, StudentAssignment])],
-  controllers: [TeacherTestsController, AdminAdtmTemplatesController],
+  controllers: [
+    TeacherTestsController,
+    AdminAdtmTemplatesController,
+    AdminAchievementTestsController,
+  ],
   providers: [TestsService],
   exports: [TestsService],
 })
