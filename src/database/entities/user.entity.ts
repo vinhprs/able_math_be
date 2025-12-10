@@ -61,6 +61,12 @@ export class User {
   @Column({ name: 'created_by', type: 'uuid', nullable: true })
   createdBy: string;
 
+  @Column({ name: 'refresh_token', type: 'text', nullable: true })
+  refreshToken?: string;
+
+  @Column({ name: 'refresh_token_expires_at', type: 'timestamp', nullable: true })
+  refreshTokenExpiresAt?: Date;
+
   // Relations
   @ManyToOne(() => User, (user) => user.createdUsers, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn({ name: 'created_by' })

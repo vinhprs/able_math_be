@@ -4,9 +4,9 @@ import { JwtModuleOptions } from '@nestjs/jwt';
 export default registerAs(
   'jwt',
   (): JwtModuleOptions => ({
-    secret: process.env.JWT_SECRET || 'your-super-secret-jwt-key',
+    secret: process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET || 'your-super-secret-jwt-key',
     signOptions: {
-      expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '15m',
+      expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '2h',
     },
   }),
 );
@@ -16,3 +16,13 @@ export const jwtRefreshConfig = registerAs('jwt-refresh', () => ({
     process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET || 'your-super-secret-jwt-refresh-key',
   expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
 }));
+
+// Export JWT config constants for use in services
+export const jwtConfig = {
+  accessTokenExpiry: process.env.JWT_ACCESS_EXPIRES_IN || '2h',
+  refreshTokenExpiry: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
+  accessTokenSecret:
+    process.env.JWT_ACCESS_SECRET || process.env.JWT_SECRET || 'your-super-secret-jwt-key',
+  refreshTokenSecret:
+    process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET || 'your-super-secret-jwt-refresh-key',
+};

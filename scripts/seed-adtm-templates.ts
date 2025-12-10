@@ -105,6 +105,61 @@ function validateDifficulty(difficulty: number): number {
   return 2;
 }
 
+/**
+ * Validate template for duplicate questions
+ */
+function validateTemplateForDuplicates(template: AdtmTemplate): {
+  isValid: boolean;
+  duplicates: Array<{ section: number; unit: string; question: number }>;
+  totalQuestions: number;
+} {
+  const questionKeys = new Set<string>();
+  const duplicates: Array<{ section: number; unit: string; question: number }> = [];
+  let totalQuestions = 0;
+
+  for (const section of template.sections) {
+    for (const unit of section.units || []) {
+      for (const question of unit.questions || []) {
+        const key = `S${section.number}-U${unit.name}-Q${question.questionNumber}`;
+
+        if (questionKeys.has(key)) {
+          duplicates.push({
+            section: section.number,
+            unit: unit.name,
+            question: question.questionNumber,
+          });
+        } else {
+          questionKeys.add(key);
+          totalQuestions++;
+        }
+      }
+    }
+    // Also check questions in sections without units (Section 1, 4, 5)
+    if (section.questions) {
+      for (const question of section.questions) {
+        const key = `S${section.number}-U_NULL-Q${question.questionNumber}`;
+
+        if (questionKeys.has(key)) {
+          duplicates.push({
+            section: section.number,
+            unit: 'N/A',
+            question: question.questionNumber,
+          });
+        } else {
+          questionKeys.add(key);
+          totalQuestions++;
+        }
+      }
+    }
+  }
+
+  return {
+    isValid: duplicates.length === 0,
+    duplicates,
+    totalQuestions,
+  };
+}
+
 // Seed one template
 async function seedTemplate(
   dataSource: DataSource,
@@ -115,6 +170,19 @@ async function seedTemplate(
   const questionRepository = dataSource.getRepository(TestQuestion);
 
   console.log(`\n📝 Seeding template: ${template.name} (${template.code})`);
+
+  // Validate template for duplicates first
+  const validation = validateTemplateForDuplicates(template);
+
+  if (!validation.isValid) {
+    console.error(`  ❌ Found ${validation.duplicates.length} duplicate questions:`);
+    validation.duplicates.forEach((d) => {
+      console.error(`     Section ${d.section}, Unit ${d.unit}, Q${d.question}`);
+    });
+    throw new Error(`Template ${template.name} has duplicate questions`);
+  }
+
+  console.log(`  ✓ Validation passed: ${validation.totalQuestions} unique questions`);
 
   // Calculate total score
   const totalScore = template.sections.reduce((sum, section) => sum + section.maxScore, 0);

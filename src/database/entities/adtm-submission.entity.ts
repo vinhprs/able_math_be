@@ -122,6 +122,25 @@ export class AdtmSubmission {
   @Column({ name: 'creative_thinking_color', type: 'varchar', length: 7, nullable: true })
   creativeThinkingColor: string;
 
+  // Progress tracking timestamps
+  @Column({ name: 'section1_saved_at', type: 'timestamp', nullable: true })
+  section1SavedAt?: Date;
+
+  @Column({ name: 'section2_saved_at', type: 'timestamp', nullable: true })
+  section2SavedAt?: Date;
+
+  @Column({ name: 'section3_saved_at', type: 'timestamp', nullable: true })
+  section3SavedAt?: Date;
+
+  @Column({ name: 'section4_saved_at', type: 'timestamp', nullable: true })
+  section4SavedAt?: Date;
+
+  @Column({ name: 'section5_saved_at', type: 'timestamp', nullable: true })
+  section5SavedAt?: Date;
+
+  @Column({ name: 'last_auto_save_at', type: 'timestamp', nullable: true })
+  lastAutoSaveAt?: Date;
+
   // Relations
   @OneToOne(() => StudentSubmission, (submission) => submission.adtmData, {
     onDelete: 'CASCADE',

@@ -55,7 +55,18 @@ export class AuthController {
   @Post('refresh')
   @HttpCode(HttpStatus.OK)
   async refresh(@Body() refreshTokenDto: RefreshTokenDto) {
-    return this.authService.refreshToken(refreshTokenDto.refreshToken);
+    return this.authService.refreshAccessToken(refreshTokenDto.refreshToken);
+  }
+
+  /**
+   * Logout and revoke refresh token
+   */
+  @Post('logout')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async logout(@Request() req: { user: IJwtPayload }) {
+    await this.authService.revokeRefreshToken(req.user.sub);
+    return { message: 'Logged out successfully' };
   }
 
   /**

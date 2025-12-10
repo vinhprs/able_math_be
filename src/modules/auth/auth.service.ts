@@ -3,21 +3,30 @@ import {
   UnauthorizedException,
   BadRequestException,
   ForbiddenException,
+  Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { User } from '../../database/entities/user.entity';
 import { IJwtPayload, IAuthResponse } from '@shared/types/users.types';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
+import { jwtConfig } from '../../config/jwt.config';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
   ) {}
 
   /**
@@ -63,40 +72,47 @@ export class AuthService {
     const user = await this.usersService.create(registerDto, currentUser.sub);
 
     // Generate tokens
-    return this.generateTokens(user);
+    return await this.generateTokens(user);
   }
 
   /**
    * Login user and generate JWT tokens
    */
   async login(user: User): Promise<IAuthResponse> {
-    return this.generateTokens(user);
+    return await this.generateTokens(user);
   }
 
   /**
    * Generate access and refresh tokens for a user
+   * Saves refresh token to database with bcrypt hashing
    */
-  private generateTokens(user: User): IAuthResponse {
+  async generateTokens(user: User): Promise<IAuthResponse> {
     const payload: IJwtPayload = {
       sub: user.id,
       username: user.username,
       role: user.role,
     };
 
-    // Generate access token (15 minutes)
+    // Generate access token (2 hours)
     const accessToken = this.jwtService.sign(payload, {
-      expiresIn: this.configService.get<string>('jwt.signOptions.expiresIn') || '15m',
+      secret: jwtConfig.accessTokenSecret,
+      expiresIn: jwtConfig.accessTokenExpiry,
     });
 
     // Generate refresh token (7 days)
-    const refreshTokenSecret =
-      this.configService.get<string>('jwt-refresh.secret') ||
-      this.configService.get<string>('jwt.secret');
-    const refreshTokenExpiresIn = this.configService.get<string>('jwt-refresh.expiresIn') || '7d';
-
     const refreshToken = this.jwtService.sign(payload, {
-      secret: refreshTokenSecret,
-      expiresIn: refreshTokenExpiresIn,
+      secret: jwtConfig.refreshTokenSecret,
+      expiresIn: jwtConfig.refreshTokenExpiry,
+    });
+
+    // Hash and save refresh token
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, 10);
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7); // 7 days from now
+
+    await this.userRepository.update(user.id, {
+      refreshToken: hashedRefreshToken,
+      refreshTokenExpiresAt: expiresAt,
     });
 
     // Remove password from user object
@@ -106,48 +122,89 @@ export class AuthService {
       accessToken,
       refreshToken,
       user: userWithoutPassword,
+      expiresIn: 7200, // 2 hours in seconds
     };
   }
 
   /**
    * Refresh access token using refresh token
+   * Implements token rotation for security
    */
-  async refreshToken(refreshToken: string): Promise<{ accessToken: string }> {
+  async refreshAccessToken(
+    refreshToken: string,
+  ): Promise<{ accessToken: string; refreshToken: string; expiresIn: number }> {
     try {
-      const refreshTokenSecret =
-        this.configService.get<string>('jwt-refresh.secret') ||
-        this.configService.get<string>('jwt.secret');
-
       // Verify refresh token
       const payload = this.jwtService.verify<IJwtPayload>(refreshToken, {
-        secret: refreshTokenSecret,
+        secret: jwtConfig.refreshTokenSecret,
       });
 
-      // Verify user still exists and is active
-      const user = await this.usersService.findOne(payload.sub);
+      // Get user with refresh token fields
+      const user = await this.userRepository.findOne({
+        where: { id: payload.sub },
+        select: ['id', 'username', 'role', 'refreshToken', 'refreshTokenExpiresAt', 'isActive'],
+      });
 
-      if (!user || !user.isActive) {
-        throw new UnauthorizedException('User not found or inactive');
+      if (!user) {
+        throw new UnauthorizedException('User not found');
       }
 
-      // Generate new access token
-      const newPayload: IJwtPayload = {
-        sub: user.id,
-        username: user.username,
-        role: user.role,
+      if (!user.isActive) {
+        throw new UnauthorizedException('User account is inactive');
+      }
+
+      // Check if refresh token exists and not expired
+      if (!user.refreshToken || !user.refreshTokenExpiresAt) {
+        throw new UnauthorizedException('No refresh token found');
+      }
+
+      if (new Date() > user.refreshTokenExpiresAt) {
+        throw new UnauthorizedException('Refresh token expired');
+      }
+
+      // Verify stored refresh token matches
+      const isValidRefreshToken = await bcrypt.compare(refreshToken, user.refreshToken);
+
+      if (!isValidRefreshToken) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+
+      // Generate new tokens (token rotation)
+      const tokens = await this.generateTokens(user);
+
+      this.logger.log(`Access token refreshed for user ${user.username}`);
+
+      return {
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        expiresIn: tokens.expiresIn || 7200,
       };
-
-      const accessToken = this.jwtService.sign(newPayload, {
-        expiresIn: this.configService.get<string>('jwt.signOptions.expiresIn') || '15m',
-      });
-
-      return { accessToken };
     } catch (error) {
+      this.logger.error('Token refresh failed:', error.message);
       if (error instanceof UnauthorizedException) {
         throw error;
       }
-      throw new UnauthorizedException('Invalid refresh token');
+      throw new UnauthorizedException('Invalid or expired refresh token');
     }
+  }
+
+  /**
+   * Refresh access token using refresh token (backward compatibility)
+   */
+  async refreshToken(refreshToken: string): Promise<{ accessToken: string }> {
+    const result = await this.refreshAccessToken(refreshToken);
+    return { accessToken: result.accessToken };
+  }
+
+  /**
+   * Revoke refresh token for a user
+   */
+  async revokeRefreshToken(userId: string): Promise<void> {
+    await this.userRepository.update(userId, {
+      refreshToken: undefined,
+      refreshTokenExpiresAt: undefined,
+    });
+    this.logger.log(`Refresh token revoked for user ${userId}`);
   }
 
   /**

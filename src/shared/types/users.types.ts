@@ -58,4 +58,5 @@ export interface IAuthResponse {
   accessToken: string;
   refreshToken: string;
   user: Omit<IUser, 'password'>;
+  expiresIn?: number; // Access token expiry in seconds
 }

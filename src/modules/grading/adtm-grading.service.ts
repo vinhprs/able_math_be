@@ -15,6 +15,7 @@ import { AdtmAnswerType, SubmissionStatus, TestType, UserRole } from '../../shar
 import { GradeSection1Dto, GradeSectionDto, RegisterStudentDto } from './dto/adtm-workflow.dto';
 import { AssignStudentsDto } from './dto/assign-students.dto';
 import { SaveProgressDto } from './dto/save-progress.dto';
+import { SaveSectionProgressDto, ProgressResponseDto } from './dto/save-section-progress.dto';
 import {
   AdtmGradingResult,
   Section1Input,
@@ -1590,5 +1591,207 @@ export class AdtmGradingService {
         savedAt: new Date(),
       };
     });
+  }
+
+  /**
+   * Save grading progress for a section
+   * Updates section-specific data and timestamps
+   */
+  async saveSectionProgress(
+    submissionId: string,
+    sectionNumber: number,
+    progressData: any,
+  ): Promise<{ success: boolean; savedAt: Date; section: number }> {
+    this.logger.log(`Saving progress for submission ${submissionId}, section ${sectionNumber}`);
+
+    return await this.dataSource.transaction(async (manager) => {
+      // Get submission
+      const submission = await manager.findOne(StudentSubmission, {
+        where: { id: submissionId },
+        relations: ['adtmData', 'test', 'test.questions'],
+      });
+
+      if (!submission) {
+        throw new NotFoundException(`Submission with ID ${submissionId} not found`);
+      }
+
+      if (!submission.adtmData) {
+        // Create AdtmSubmission if it doesn't exist
+        const adtmData = manager.create(AdtmSubmission, {
+          submissionId: submission.id,
+          testLevel: submission.test.level || 1,
+        });
+        await manager.save(AdtmSubmission, adtmData);
+        submission.adtmData = adtmData;
+      }
+
+      // Prepare update data
+      const updateData: any = {
+        [`section${sectionNumber}SavedAt`]: new Date(),
+        lastAutoSaveAt: new Date(),
+      };
+
+      // Section 1 special inputs
+      if (sectionNumber === 1) {
+        if (progressData.concentration !== undefined) {
+          updateData.concentrationLevel = progressData.concentration;
+        }
+        if (progressData.mood !== undefined) {
+          updateData.currentMood = progressData.mood.toString();
+        }
+        if (progressData.expectedScore !== undefined) {
+          updateData.expectedScore = progressData.expectedScore;
+        }
+      }
+
+      // Update AdtmSubmission
+      await manager.update(AdtmSubmission, { id: submission.adtmData.id }, updateData);
+
+      // Update individual answer scores
+      if (progressData.questionScores) {
+        const sectionQuestions = submission.test.questions.filter(
+          (q) => q.sectionNumber === sectionNumber,
+        );
+
+        for (const [questionNumberStr, score] of Object.entries(progressData.questionScores)) {
+          const questionNumber = parseInt(questionNumberStr);
+          const question = sectionQuestions.find((q) => q.questionNumber === questionNumber);
+
+          if (!question) {
+            this.logger.warn(`Question ${questionNumber} not found in section ${sectionNumber}`);
+            continue;
+          }
+
+          // Ensure score is a number
+          const scoreValue = typeof score === 'number' ? score : Number(score);
+          if (isNaN(scoreValue)) {
+            this.logger.warn(`Invalid score for question ${questionNumber}: ${score}`);
+            continue;
+          }
+
+          // Find or create answer
+          let answer = await manager.findOne(StudentAnswer, {
+            where: {
+              submissionId,
+              questionId: question.id,
+            },
+          });
+
+          if (!answer) {
+            answer = manager.create(StudentAnswer, {
+              submissionId,
+              questionId: question.id,
+              studentAnswer: '', // A-DTM doesn't store student answers
+            });
+          }
+
+          answer.scoreEarned = scoreValue;
+          answer.isCorrect = scoreValue > 0;
+
+          await manager.save(StudentAnswer, answer);
+        }
+      }
+
+      // Update submission status if needed
+      if (submission.status === SubmissionStatus.NOT_STARTED) {
+        await manager.update(
+          StudentSubmission,
+          { id: submissionId },
+          {
+            status: SubmissionStatus.IN_PROGRESS,
+          },
+        );
+      }
+
+      this.logger.log(
+        `Progress saved successfully for submission ${submissionId}, section ${sectionNumber}`,
+      );
+
+      return {
+        success: true,
+        savedAt: new Date(),
+        section: sectionNumber,
+      };
+    });
+  }
+
+  /**
+   * Get current grading progress
+   */
+  async getGradingProgress(submissionId: string): Promise<ProgressResponseDto> {
+    const submission = await this.submissionRepository.findOne({
+      where: { id: submissionId },
+      relations: ['adtmData', 'answers', 'answers.question', 'test', 'test.questions'],
+    });
+
+    if (!submission) {
+      throw new NotFoundException(`Submission with ID ${submissionId} not found`);
+    }
+
+    if (!submission.adtmData) {
+      throw new NotFoundException(`A-DTM data not found for submission ${submissionId}`);
+    }
+
+    // Check completion for each section
+    const sectionsCompleted = {
+      section1: this.isSectionCompleted(submission, 1),
+      section2: this.isSectionCompleted(submission, 2),
+      section3: this.isSectionCompleted(submission, 3),
+      section4: this.isSectionCompleted(submission, 4),
+      section5: this.isSectionCompleted(submission, 5),
+    };
+
+    const completedCount = Object.values(sectionsCompleted).filter(Boolean).length;
+    const totalSections = 5;
+
+    return {
+      submissionId,
+      status: submission.status,
+      sectionsCompleted,
+      progress: {
+        completed: completedCount,
+        total: totalSections,
+        percentage: Math.round((completedCount / totalSections) * 100),
+      },
+      lastSaved: submission.adtmData.lastAutoSaveAt || submission.updatedAt,
+      canFinalize: completedCount === totalSections,
+    };
+  }
+
+  /**
+   * Check if a section is completed
+   */
+  private isSectionCompleted(submission: StudentSubmission, sectionNumber: number): boolean {
+    const sectionAnswers = submission.answers.filter(
+      (a) => a.question && a.question.sectionNumber === sectionNumber,
+    );
+
+    if (sectionAnswers.length === 0) return false;
+
+    // Get expected question count for this section
+    const expectedQuestionCount = submission.test.questions.filter(
+      (q) => q.sectionNumber === sectionNumber,
+    ).length;
+
+    // Check if we have answers for all questions
+    if (sectionAnswers.length !== expectedQuestionCount) return false;
+
+    // Check if all answers have scores
+    const allScored = sectionAnswers.every(
+      (a) => a.scoreEarned !== null && a.scoreEarned !== undefined,
+    );
+
+    // For section 1, also check special inputs
+    if (sectionNumber === 1) {
+      const hasSpecialInputs: boolean =
+        submission.adtmData?.concentrationLevel !== null &&
+        submission.adtmData?.concentrationLevel !== undefined &&
+        !!submission.adtmData?.currentMood &&
+        submission.adtmData?.expectedScore !== null &&
+        submission.adtmData?.expectedScore !== undefined;
+      return allScored && hasSpecialInputs;
+    }
+
+    return allScored;
   }
 }

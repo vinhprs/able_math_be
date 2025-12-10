@@ -23,6 +23,7 @@ import { UserRole, SubmissionStatus } from '@shared/types/enum';
 import { IJwtPayload } from '@shared/types/users.types';
 import { RegisterStudentDto, GradeSection1Dto, GradeSectionDto } from './dto/adtm-workflow.dto';
 import { SaveProgressDto } from './dto/save-progress.dto';
+import { SaveSectionProgressDto } from './dto/save-section-progress.dto';
 
 /**
  * Controller for A-DTM grading workflow
@@ -179,6 +180,33 @@ export class AdtmController {
   @HttpCode(HttpStatus.OK)
   async saveProgress(@Param('id', ParseUUIDPipe) id: string, @Body() dto: SaveProgressDto) {
     return this.adtmGradingService.saveProgress(id, dto);
+  }
+
+  /**
+   * Save section progress (auto-save by section)
+   * POST /api/teacher/adtm/submissions/:id/save-section-progress
+   */
+  @Post('submissions/:id/save-section-progress')
+  @HttpCode(HttpStatus.OK)
+  async saveSectionProgress(
+    @Param('id', ParseUUIDPipe) submissionId: string,
+    @Body() progressDto: SaveSectionProgressDto,
+  ) {
+    return this.adtmGradingService.saveSectionProgress(
+      submissionId,
+      progressDto.sectionNumber,
+      progressDto.data || {},
+    );
+  }
+
+  /**
+   * Get grading progress status
+   * GET /api/teacher/adtm/submissions/:id/progress
+   */
+  @Get('submissions/:id/progress')
+  @HttpCode(HttpStatus.OK)
+  async getProgress(@Param('id', ParseUUIDPipe) submissionId: string) {
+    return this.adtmGradingService.getGradingProgress(submissionId);
   }
 
   /**

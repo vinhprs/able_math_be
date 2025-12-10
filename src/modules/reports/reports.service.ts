@@ -109,6 +109,7 @@ export class ReportsService {
         semester: submission.test.semester,
         level: submission.test.level,
         examType: submission.test.examType,
+        testNumber: submission.test.testNumber,
         nationalAverage: submission.test.nationalAverage || 0,
         maxScore: submission.test.maxScore || 0,
         totalApplicants: submission.test.totalApplicants || 0,
