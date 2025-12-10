@@ -23,4 +23,3 @@ import { AdtmSubmission } from '../../database/entities/adtm-submission.entity';
   exports: [ResultsService],
 })
 export class ResultsModule {}
-

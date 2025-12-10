@@ -46,6 +46,24 @@ export class TestQuestion {
   })
   answerType: AnswerType;
 
+  @Column({
+    name: 'question_type',
+    type: 'enum',
+    enum: ['TEXT', 'MULTIPLE_CHOICE', 'TRUE_FALSE'],
+    default: 'TEXT',
+  })
+  @Index()
+  questionType: 'TEXT' | 'MULTIPLE_CHOICE' | 'TRUE_FALSE';
+
+  @Column({ type: 'jsonb', nullable: true })
+  options: {
+    A?: string;
+    B?: string;
+    C?: string;
+    D?: string;
+    E?: string;
+  } | null;
+
   @Column({ name: 'question_image', nullable: true })
   questionImage: string;
 

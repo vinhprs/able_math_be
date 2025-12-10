@@ -1,4 +1,11 @@
-import { IsArray, IsString, IsDateString, IsOptional, IsBoolean, ArrayMinSize } from 'class-validator';
+import {
+  IsArray,
+  IsString,
+  IsDateString,
+  IsOptional,
+  IsBoolean,
+  ArrayMinSize,
+} from 'class-validator';
 
 export class AssignStudentsDto {
   @IsArray()
@@ -26,4 +33,3 @@ export class AssignStudentsDto {
   @IsBoolean()
   notifyParents: boolean;
 }
-

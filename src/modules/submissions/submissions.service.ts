@@ -139,6 +139,8 @@ export class SubmissionsService {
         questionNumber: question.questionNumber,
         questionText: question.questionText,
         questionImage: question.questionImage,
+        questionType: question.questionType || 'TEXT',
+        options: question.questionType === 'MULTIPLE_CHOICE' ? question.options : null,
         score: question.score,
         unitName: question.unitName,
         difficulty: question.difficulty,

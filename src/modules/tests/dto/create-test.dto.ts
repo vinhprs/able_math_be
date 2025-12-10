@@ -10,6 +10,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
+import { ValidateTotalScore } from '../../../common/validators/total-score.validator';
 import { CreateQuestionDto } from './create-question.dto';
 
 export class CreateTestDto {
@@ -40,5 +41,8 @@ export class CreateTestDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateQuestionDto)
+  @ValidateTotalScore(100, {
+    message: 'Total score of all questions must equal 100 points',
+  })
   questions?: CreateQuestionDto[];
 }

@@ -108,7 +108,11 @@ export class AchievementGradingService {
         }
 
         // Compare student answer with correct answer
-        const isCorrect = this.compareAnswers(answer.studentAnswer, question.correctAnswer);
+        const isCorrect = this.compareAnswers(
+          answer.studentAnswer,
+          question.correctAnswer,
+          question.questionType || 'TEXT',
+        );
 
         // Calculate score earned
         const scoreEarned = isCorrect ? question.score : 0;
@@ -201,18 +205,28 @@ export class AchievementGradingService {
    * Normalizes both answers (trim, lowercase) before comparison
    * @param studentAnswer - Student's answer
    * @param correctAnswer - Correct answer
+   * @param questionType - Type of question (TEXT, MULTIPLE_CHOICE, TRUE_FALSE)
    * @returns true if answers match
    */
-  compareAnswers(studentAnswer: string | null, correctAnswer: string): boolean {
-    if (!studentAnswer) {
+  private compareAnswers(
+    studentAnswer: string | null,
+    correctAnswer: string,
+    questionType: string,
+  ): boolean {
+    if (!studentAnswer || studentAnswer.trim() === '') {
       return false;
     }
 
-    // Normalize both answers: trim whitespace and convert to lowercase
-    const normalizedStudent = studentAnswer.trim().toLowerCase();
-    const normalizedCorrect = correctAnswer.trim().toLowerCase();
+    if (questionType === 'MULTIPLE_CHOICE') {
+      // Case-insensitive comparison, trim whitespace
+      return studentAnswer.trim().toUpperCase() === correctAnswer.trim().toUpperCase();
+    }
 
-    return normalizedStudent === normalizedCorrect;
+    // For text answers, use existing logic
+    const student = studentAnswer.trim().toLowerCase();
+    const correct = correctAnswer.trim().toLowerCase();
+
+    return student === correct;
   }
 
   /**

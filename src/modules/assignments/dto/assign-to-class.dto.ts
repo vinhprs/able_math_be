@@ -15,4 +15,3 @@ export class AssignToClassDto {
   @IsString()
   instructions?: string;
 }
-

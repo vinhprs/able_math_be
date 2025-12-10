@@ -69,4 +69,3 @@ export class StudentTestDto {
   submittedAt: Date | null;
   score: number | null;
 }
-

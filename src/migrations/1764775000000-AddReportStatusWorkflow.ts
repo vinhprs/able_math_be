@@ -116,4 +116,3 @@ export class AddReportStatusWorkflow1764775000000 implements MigrationInterface 
     // The enum type will remain but unused.
   }
 }
-

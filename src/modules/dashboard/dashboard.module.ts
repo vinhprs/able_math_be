@@ -8,17 +8,9 @@ import { StudentSubmission } from '../../database/entities/student-submission.en
 import { StudentAssignment } from '../../database/entities/student-assignment.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([
-      User,
-      Test,
-      StudentSubmission,
-      StudentAssignment,
-    ]),
-  ],
+  imports: [TypeOrmModule.forFeature([User, Test, StudentSubmission, StudentAssignment])],
   controllers: [DashboardController],
   providers: [DashboardService],
   exports: [DashboardService],
 })
 export class DashboardModule {}
-

@@ -32,4 +32,3 @@ export class SaveProgressDto {
   @Max(5)
   currentSection?: number;
 }
-

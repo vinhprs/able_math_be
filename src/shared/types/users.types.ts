@@ -1,4 +1,4 @@
-import { UserRole } from "./enum";
+import { UserRole } from './enum';
 
 /**
  * Base user interface
@@ -57,5 +57,5 @@ export interface IJwtPayload {
 export interface IAuthResponse {
   accessToken: string;
   refreshToken: string;
-  user: Omit<IUser, "password">;
+  user: Omit<IUser, 'password'>;
 }

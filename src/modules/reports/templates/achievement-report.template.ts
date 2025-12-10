@@ -380,4 +380,3 @@ export class AchievementReportTemplate {
     `.trim();
   }
 }
-

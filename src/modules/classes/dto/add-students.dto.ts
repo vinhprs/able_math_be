@@ -6,4 +6,3 @@ export class AddStudentsDto {
   @IsUUID('4', { each: true })
   studentIds: string[];
 }
-

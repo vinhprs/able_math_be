@@ -6,7 +6,7 @@ import {
   Term,
   AdtmAnswerType,
   DifficultyLevel,
-} from "./enum";
+} from './enum';
 
 /**
  * Test interface
