@@ -574,11 +574,11 @@ export class TestsService {
     if (updateData.questionType !== undefined) {
       // If changing to non-multiple choice, clear options
       if (updateData.questionType !== 'MULTIPLE_CHOICE') {
-        updateData.options = null;
+        updateData.options = undefined;
       }
     } else if (question.questionType !== 'MULTIPLE_CHOICE' && updateData.options) {
       // If current type is not multiple choice but options are being set, clear them
-      updateData.options = null;
+      updateData.options = undefined;
     }
 
     Object.assign(question, updateData);
