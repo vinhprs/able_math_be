@@ -121,6 +121,16 @@ export interface AdtmDomainData {
 }
 
 /**
+ * Area-Difficulty Data for Score by Area - Difficulty chart
+ */
+export interface AreaDifficultyData {
+  area: string; // Area name or number (1-7)
+  적용: number; // Application score (Section 3)
+  개념: number; // Concept score (Section 2)
+  계산: number; // Calculation score (Section 1)
+}
+
+/**
  * A-DTM Test Report Data
  */
 export interface AdtmReportData {
@@ -141,5 +151,6 @@ export interface AdtmReportData {
     sectionBar: ChartData;
     unitRadar: ChartData;
   };
+  areaDifficulty?: AreaDifficultyData[]; // NEW: Data for Score by Area - Difficulty chart
   recommendations: string[];
 }

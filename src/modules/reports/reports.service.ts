@@ -246,6 +246,7 @@ export class ReportsService {
         sectionBar: this.generateSectionBarChart(sections),
         unitRadar: this.generateUnitRadarChart(sections),
       },
+      areaDifficulty: this.generateAreaDifficultyData(sections),
       recommendations,
     };
 
@@ -985,6 +986,95 @@ export class ReportsService {
         },
       ],
     };
+  }
+
+  /**
+   * Generate Area-Difficulty data for "Score by Area - Difficulty" chart
+   * Combines Section 1 difficulty breakdown (계산), Section 2 units (개념), and Section 3 units (적용)
+   */
+  private generateAreaDifficultyData(
+    sections: AdtmReportData['sections'],
+  ): import('./interfaces/report-data.interface').AreaDifficultyData[] {
+    const areaData: Array<{
+      area: string;
+      적용: number;
+      개념: number;
+      계산: number;
+    }> = [];
+
+    // Section 1 (Calculation Ability) - difficulty breakdown for "계산"
+    const section1 = sections.find((s) => s.number === 1);
+    if (section1?.difficultyBreakdown) {
+      section1.difficultyBreakdown.forEach((diff, index) => {
+        // Areas 1-4 from Section 1 difficulty breakdown
+        areaData.push({
+          area: `${index + 1}`,
+          적용: 0,
+          개념: 0,
+          계산: diff.standardScore,
+        });
+      });
+    }
+
+    // Section 2 (Conceptual Understanding) - units for "개념"
+    const section2 = sections.find((s) => s.number === 2);
+    if (section2?.unitScores) {
+      section2.unitScores.forEach((unit, index) => {
+        const areaIndex = areaData.length;
+        if (areaIndex < 7) {
+          // Add or update area with 개념 score
+          if (areaData[areaIndex]) {
+            areaData[areaIndex].개념 = unit.standardScore;
+          } else {
+            areaData.push({
+              area: `${areaIndex + 1}`,
+              적용: 0,
+              개념: unit.standardScore,
+              계산: 0,
+            });
+          }
+        }
+      });
+    }
+
+    // Section 3 (Conceptual Application) - units for "적용"
+    const section3 = sections.find((s) => s.number === 3);
+    if (section3?.unitScores) {
+      section3.unitScores.forEach((unit, index) => {
+        const areaIndex = areaData.length;
+        if (areaIndex < 7) {
+          // Add or update area with 적용 score
+          if (areaData[areaIndex]) {
+            areaData[areaIndex].적용 = unit.standardScore;
+          } else {
+            areaData.push({
+              area: `${areaIndex + 1}`,
+              적용: unit.standardScore,
+              개념: 0,
+              계산: 0,
+            });
+          }
+        }
+      });
+    }
+
+    // Ensure we have exactly 7 areas (pad with empty if needed)
+    while (areaData.length < 7) {
+      areaData.push({
+        area: `${areaData.length + 1}`,
+        적용: 0,
+        개념: 0,
+        계산: 0,
+      });
+    }
+
+    // Limit to 7 areas
+    return areaData.slice(0, 7).map((data) => ({
+      area: data.area,
+      적용: data.적용,
+      개념: data.개념,
+      계산: data.계산,
+    }));
   }
 
   /**

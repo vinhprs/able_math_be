@@ -24,11 +24,11 @@ import { jwtConfig } from '../../config/jwt.config';
         // This ensures tokens signed with jwtConfig.accessTokenSecret can be verified
         return {
           secret: jwtConfig.accessTokenSecret,
-          signOptions: {
+        signOptions: {
             expiresIn: jwtConfig.accessTokenExpiry,
           },
         };
-      },
+        },
     }),
   ],
   controllers: [AuthController],
